@@ -17,13 +17,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/info")
 public class InfoController {
 	
-	@Value("${resume.location}")
-	private String resumeLocation;
+	@Value("${pdf.location}")
+	private String pdfLocation;
+	
+	@Value("${pdf.name}")
+	private String pdfName;
 	
 	@GetMapping("/download/resume")
 	public void downloadResume(HttpServletResponse response) throws IOException {
-		Path resumePath = Paths.get(resumeLocation);
-		String pdfName = resumePath.getFileName().toString();
+		Path resumePath = Paths.get(pdfLocation, pdfName);
 		OutputStream out = response.getOutputStream();
 		Files.copy(resumePath, out);
 		response.setContentType("application/pdf");
