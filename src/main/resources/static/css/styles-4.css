@@ -676,8 +676,18 @@ a.btn:hover {
     display: inline-block;
     width: 100%;
   }
+  button:focus , button.btn:focus , .ng-scope .btn:focus , button:visited , button.btn:visited , .btn:visited{
+  	outline: none !important;
+  	text-decoration: none !important;
+  }
   .header .actions .btn:last-child {
     margin-bottom: 0;
+    border:none !important;
+  }
+  .header .actions .btn:last-child:focus , .header .actions .btn:last-child:visited{
+  	outline: none !important;
+  	box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.4);
+  	border:1px solid #449d48 !important;
   }
   .header .name {
     font-size: 36px;
@@ -914,4 +924,13 @@ a.btn:hover {
 }
 .config-panel .close .fa {
   color: #fff;
+}
+.btn:focus,
+.btn:active:focus,
+.btn.active:focus,
+.btn.focus,
+.btn:active.focus,
+.btn.active.focus {
+  outline: none !important;
+  outline-offset: -2px;
 }
