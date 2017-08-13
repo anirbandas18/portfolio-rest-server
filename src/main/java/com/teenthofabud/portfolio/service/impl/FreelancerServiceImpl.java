@@ -24,7 +24,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 		// TODO Auto-generated method stub
 		if(freelancer == null) {
 			Exception cause = new Exception(exceptionMessages.getDetailsEmpty());
-			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST.value(), cause);
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
 		Freelancer tmp = repository.save(freelancer);
 		return tmp.getId();
@@ -36,7 +36,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 		Freelancer freelancer = repository.findById(id);
 		if(freelancer == null) {
 			Exception cause = new Exception(exceptionMessages.getDetailsInvalid() + id);
-			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND.value(), cause);
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, cause);
 		}
 		return freelancer;
 	}

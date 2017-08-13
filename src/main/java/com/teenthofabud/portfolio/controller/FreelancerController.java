@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.teenthofabud.portfolio.exception.FreelancerException;
-import com.teenthofabud.portfolio.exception.ResumeException;
+import com.teenthofabud.portfolio.exception.ServiceException;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.service.ResumeService;
@@ -38,10 +37,10 @@ public class FreelancerController {
 		try {
 			Freelancer body = freelancerService.getFreelancer(id);
 			response = new ResponseEntity<>(body, HttpStatus.OK);
-		} catch (FreelancerException e) {
-			String description = utilityServices.wrapException(e);
+		} catch (ServiceException e) {
+			String description = utilityServices.wrapServiceException(e);
 			Resource resource = new DescriptiveResource(description);
-			response = new ResponseEntity<>(resource, e.getCode());
+			response = new ResponseEntity<>(resource, e.getStatus());
 		}
 		return response;
 	}
@@ -56,8 +55,8 @@ public class FreelancerController {
 					.contentLength(resume.length)
 					.contentType(MediaType.parseMediaType(MediaType.APPLICATION_PDF_VALUE))
 					.body(resource);
-		} catch (ResumeException e) {
-			String description = utilityServices.wrapException(e);
+		} catch (ServiceException e) {
+			String description = utilityServices.wrapServiceException(e);
 			Resource resource = new DescriptiveResource(description);
 			response = new ResponseEntity<>(resource, HttpStatus.NOT_FOUND);
 		}

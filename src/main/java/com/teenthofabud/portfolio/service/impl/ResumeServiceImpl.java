@@ -32,7 +32,7 @@ public class ResumeServiceImpl implements ResumeService {
 		try {
 			resume = Files.readAllBytes(resumePath);
 		} catch (IOException e) {
-			throw new ServiceException(resumeExceptionTemplate, HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+			throw new ServiceException(resumeExceptionTemplate, HttpStatus.INTERNAL_SERVER_ERROR, e);
 		}
 		return resume;
 	}
@@ -45,7 +45,7 @@ public class ResumeServiceImpl implements ResumeService {
 		try {
 			result = Files.write(resumePath, resume);
 		} catch (IOException e) {
-			throw new ServiceException(resumeExceptionTemplate, HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+			throw new ServiceException(resumeExceptionTemplate, HttpStatus.INTERNAL_SERVER_ERROR, e);
 		}
 		Long size = result.toFile().length();
 		return size;
