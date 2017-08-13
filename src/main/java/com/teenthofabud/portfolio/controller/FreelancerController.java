@@ -12,25 +12,37 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teenthofabud.portfolio.exception.FreelancerException;
 import com.teenthofabud.portfolio.exception.ResumeException;
+import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.service.ResumeService;
-import com.teenthofabud.portfolio.vo.IntroductionVO;
+import com.teenthofabud.portfolio.service.UtilityServices;
 
 @RestController
-@RequestMapping("/introduction")
-public class IntroductionController {
+@RequestMapping("/freelancer")
+public class FreelancerController {
 	
 	@Autowired
 	private ResumeService resumeService;
 	
 	@Autowired
-	private FreelancerService introductionService;
+	private FreelancerService freelancerService;
+	
+	@Autowired
+	private UtilityServices utilityServices;
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<IntroductionVO> getFreelancerIntroduction(@PathVariable String id) {
-		IntroductionVO body = null;
-		ResponseEntity<IntroductionVO> response = new ResponseEntity<IntroductionVO>(body, HttpStatus.OK);
+	public ResponseEntity<?> getFreelancerIntroduction(@PathVariable String id) {
+		ResponseEntity<?> response = null;
+		try {
+			Freelancer body = freelancerService.getFreelancer(id);
+			response = new ResponseEntity<>(body, HttpStatus.OK);
+		} catch (FreelancerException e) {
+			String description = utilityServices.wrapException(e);
+			Resource resource = new DescriptiveResource(description);
+			response = new ResponseEntity<>(resource, e.getCode());
+		}
 		return response;
 	}
 	
@@ -45,7 +57,8 @@ public class IntroductionController {
 					.contentType(MediaType.parseMediaType(MediaType.APPLICATION_PDF_VALUE))
 					.body(resource);
 		} catch (ResumeException e) {
-			Resource resource = new DescriptiveResource(e.getMessage());
+			String description = utilityServices.wrapException(e);
+			Resource resource = new DescriptiveResource(description);
 			response = new ResponseEntity<>(resource, HttpStatus.NOT_FOUND);
 		}
 		return response;
