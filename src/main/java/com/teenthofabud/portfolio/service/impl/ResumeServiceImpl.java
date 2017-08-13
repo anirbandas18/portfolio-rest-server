@@ -6,10 +6,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import com.teenthofabud.portfolio.exception.ResumeException;
 import com.teenthofabud.portfolio.service.ResumeService;
 
+@Component
 public class ResumeServiceImpl implements ResumeService {
 	
 	@Value("${resume.base.location}")
@@ -17,6 +19,9 @@ public class ResumeServiceImpl implements ResumeService {
 	
 	@Value("${resume.file.extension}")
 	private String resumeFileExtension;
+	
+	@Value("${resume.exception.template}")
+	private String resumeExceptionTemplate;
 	
 	public byte[] exportResume(String freelancerId) throws ResumeException {
 		// TODO Auto-generated method stub
@@ -26,7 +31,7 @@ public class ResumeServiceImpl implements ResumeService {
 		try {
 			resume = Files.readAllBytes(resumePath);
 		} catch (IOException e) {
-			throw new ResumeException("", e);
+			throw new ResumeException(resumeExceptionTemplate, e);
 		}
 		return resume;
 	}
@@ -40,7 +45,7 @@ public class ResumeServiceImpl implements ResumeService {
 			result = Files.write(resumePath, resume);
 		} catch (IOException e) {
 			result = resumePath;
-			throw new ResumeException("", e);
+			throw new ResumeException(resumeExceptionTemplate, e);
 		}
 		Long size = result.toFile().length();
 		return size;
