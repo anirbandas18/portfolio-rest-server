@@ -3,7 +3,6 @@ package com.teenthofabud.portfolio.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,8 +27,10 @@ public class FreelancerController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Freelancer> getFreelancerIntroduction(@PathVariable String id) throws ServiceException {
-		Freelancer body = freelancerService.getFreelancer(id);
-		ResponseEntity<Freelancer> response = new ResponseEntity<>(body, HttpStatus.OK);
+		Freelancer freelancer = freelancerService.getFreelancer(id);
+		ResponseEntity<Freelancer> response = ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(freelancer);
 		return response;
 	}
 	

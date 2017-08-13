@@ -16,7 +16,7 @@ public class GlobalExceptionHandler {
 	private UtilityServices utilityServices;
 
 	@ExceptionHandler(ServiceException.class)
-	public ResponseEntity<Resource> handleExceptionFromController(ServiceException e) {
+	public ResponseEntity<Resource> handleControllerExceptions(ServiceException e) {
 		String description = utilityServices.wrapServiceException(e);
 		Resource resource = new DescriptiveResource(description);
 		ResponseEntity<Resource> response = new ResponseEntity<>(resource, e.getStatus());
