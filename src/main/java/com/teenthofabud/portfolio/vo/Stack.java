@@ -1,11 +1,11 @@
-package com.teenthofabud.portfolio.model.collections;
+package com.teenthofabud.portfolio.vo;
 
 import java.util.List;
 
-import com.teenthofabud.portfolio.model.embeddeddocuments.Technology;
+import com.teenthofabud.portfolio.model.collections.Technology;
 
 public class Stack {
-
+	
 	private List<Technology> frontend;
 	private List<Technology> database;
 	private List<Technology> container;
@@ -34,6 +34,5 @@ public class Stack {
 	public void setBackend(Technology backend) {
 		this.backend = backend;
 	}
-	
 	
 }

@@ -1,7 +1,7 @@
-package com.teenthofabud.portfolio.model.collections;
+package com.teenthofabud.portfolio.vo;
 
-import com.teenthofabud.portfolio.model.embeddeddocuments.Employee;
-import com.teenthofabud.portfolio.model.fields.Profile;
+import com.teenthofabud.portfolio.model.collections.Employee;
+import com.teenthofabud.portfolio.model.collections.Profile;
 
 public class Introduction {
 	
@@ -19,7 +19,5 @@ public class Introduction {
 	public void setOf(Employee of) {
 		this.of = of;
 	}
-	
-	
 
 }

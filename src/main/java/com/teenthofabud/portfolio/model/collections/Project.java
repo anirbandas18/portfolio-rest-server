@@ -2,10 +2,16 @@ package com.teenthofabud.portfolio.model.collections;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import com.teenthofabud.portfolio.model.embeddeddocuments.Technology;
 
+@Document
 public class Project {
 	
+	@Id
+	private String id;
 	private Double duration;
 	private String name;
 	private String description;
@@ -54,6 +60,12 @@ public class Project {
 	}
 	public void setTechnologies(List<Technology> technologies) {
 		this.technologies = technologies;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 

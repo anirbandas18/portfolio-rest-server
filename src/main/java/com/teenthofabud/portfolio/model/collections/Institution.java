@@ -1,9 +1,15 @@
-package com.teenthofabud.portfolio.model.embeddeddocuments;
+package com.teenthofabud.portfolio.model.collections;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.teenthofabud.portfolio.model.fields.Time;
 
+@Document
 public class Institution {
 	
+	@Id
+	private String id;
 	private String name;
 	private Time start;
 	private Time end;
@@ -59,6 +65,12 @@ public class Institution {
 	}
 	public void setLogoURL(String logoURL) {
 		this.logoURL = logoURL;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 }

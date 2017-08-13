@@ -1,10 +1,16 @@
 package com.teenthofabud.portfolio.model.collections;
 
-import com.teenthofabud.portfolio.model.embeddeddocuments.Employer;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.teenthofabud.portfolio.model.fields.Employer;
 import com.teenthofabud.portfolio.model.fields.Time;
 
+@Document
 public class Experience {
 	
+	@Id
+	private String id;
 	private Employer under;
 	private Time start;
 	private Time end;
@@ -40,7 +46,11 @@ public class Experience {
 	public void setAs(String as) {
 		this.as = as;
 	}
-	
-	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 
 }

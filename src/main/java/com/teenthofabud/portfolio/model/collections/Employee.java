@@ -1,12 +1,18 @@
-package com.teenthofabud.portfolio.model.embeddeddocuments;
+package com.teenthofabud.portfolio.model.collections;
 
 import java.util.List;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.teenthofabud.portfolio.model.fields.Location;
 import com.teenthofabud.portfolio.model.fields.SocialMedia;
 
+@Document
 public class Employee {
 	
+	@Id
+	private String id;
 	private String firstName;
 	private String lastName;
 	private String photoURL;
@@ -63,6 +69,11 @@ public class Employee {
 	public void setSocialLinks(List<SocialMedia> socialLinks) {
 		this.socialLinks = socialLinks;
 	}
-	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 
 }

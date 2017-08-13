@@ -1,8 +1,8 @@
-package com.teenthofabud.portfolio.model.collections;
+package com.teenthofabud.portfolio.vo;
 
 import java.util.List;
 
-import com.teenthofabud.portfolio.model.embeddeddocuments.Institution;
+import com.teenthofabud.portfolio.model.collections.Institution;
 
 public class Education {
 	
@@ -20,6 +20,5 @@ public class Education {
 	public void setUniversities(List<Institution> universities) {
 		this.universities = universities;
 	}
-	
 
 }

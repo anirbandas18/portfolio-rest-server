@@ -2,8 +2,13 @@ package com.teenthofabud.portfolio.model.collections;
 
 import java.util.Date;
 
-public class Contact {
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
+@Document
+public class Contact {
+	@Id
+	private String id;
 	private String firstName;
 	private String lastName;
 	private String phoneNumber;
@@ -46,6 +51,11 @@ public class Contact {
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
-	
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
 	
 }

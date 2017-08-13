@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.model.embeddeddocuments;
+package com.teenthofabud.portfolio.model.fields;
 
 import com.teenthofabud.portfolio.model.fields.Location;
 
