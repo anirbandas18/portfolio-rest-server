@@ -1,26 +1,27 @@
 package com.teenthofabud.portfolio.controller;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.DescriptiveResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.teenthofabud.portfolio.exception.ResumeException;
+import com.teenthofabud.portfolio.service.ResumeService;
 import com.teenthofabud.portfolio.vo.IntroductionVO;
 
 @RestController
-@RequestMapping("/intro")
+@RequestMapping("/introduction")
 public class IntroductionController {
+	
+	@Autowired
+	private ResumeService resumeService;
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<IntroductionVO> getFreelancerIntroduction(@PathVariable String id) {
@@ -29,20 +30,21 @@ public class IntroductionController {
 		return response;
 	}
 	
-	@Value("${pdf.location}")
-	private String pdfLocation;
-	
-	@Value("${pdf.name}")
-	private String pdfName;
-	
-	@GetMapping("/resume/download")
-	public void downloadResume(HttpServletResponse response) throws IOException {
-		Path resumePath = Paths.get(pdfLocation, pdfName);
-		OutputStream out = response.getOutputStream();
-		Files.copy(resumePath, out);
-		response.setContentType("application/pdf");
-		response.setHeader("Content-Disposition", "attachment; filename=" + pdfName);
-		response.flushBuffer();
+	@GetMapping("/resume/{id}")
+	public ResponseEntity<Resource> downloadResume(@PathVariable String id) {
+		ResponseEntity<Resource> response = null;
+		try {
+			byte[] resume = resumeService.exportResume(id);
+			Resource resource = new ByteArrayResource(resume);
+			response = ResponseEntity.ok()
+					.contentLength(resume.length)
+					.contentType(MediaType.parseMediaType(MediaType.APPLICATION_PDF_VALUE))
+					.body(resource);
+		} catch (ResumeException e) {
+			Resource resource = new DescriptiveResource(e.getMessage());
+			response = new ResponseEntity<>(resource, HttpStatus.NOT_FOUND);
+		}
+		return response;
 	}
 	
 }
