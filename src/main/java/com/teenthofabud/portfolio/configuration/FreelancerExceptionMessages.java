@@ -4,7 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties("freelancer")
+@ConfigurationProperties(prefix = "freelancer")
 public class FreelancerExceptionMessages {
 	
 	private String detailsInvalid;

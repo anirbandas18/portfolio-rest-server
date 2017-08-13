@@ -8,11 +8,13 @@ import java.nio.file.Paths;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.teenthofabud.portfolio.exception.ServiceException;
 import com.teenthofabud.portfolio.service.ResumeService;
 
 @Component
+@Transactional(rollbackFor = {ServiceException.class})
 public class ResumeServiceImpl implements ResumeService {
 	
 	@Value("${resume.base.location}")
