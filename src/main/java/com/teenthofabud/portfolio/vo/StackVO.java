@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.teenthofabud.portfolio.model.collections.Technology;
 
-public class Stack {
+public class StackVO {
 	
 	private List<Technology> frontend;
 	private List<Technology> database;

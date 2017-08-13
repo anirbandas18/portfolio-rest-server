@@ -1,17 +1,12 @@
-package com.teenthofabud.portfolio.model.collections;
+package com.teenthofabud.portfolio.vo;
 
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
+import com.teenthofabud.portfolio.model.collections.Technology;
 import com.teenthofabud.portfolio.model.fields.Time;
 
-@Document
-public class Project {
+public class ProjectVO {
 	
-	@Id
-	private String id;
 	private Time from;
 	private Time to;
 	private String name;
@@ -21,7 +16,7 @@ public class Project {
 	private List<String> photoURLs;
 	private List<Technology> technologies;
 	private Integer teamSize;
-	
+	private Double duration;
 	public Time getFrom() {
 		return from;
 	}
@@ -33,12 +28,6 @@ public class Project {
 	}
 	public void setTo(Time to) {
 		this.to = to;
-	}
-	public Integer getTeamSize() {
-		return teamSize;
-	}
-	public void setTeamSize(Integer teamSize) {
-		this.teamSize = teamSize;
 	}
 	public String getName() {
 		return name;
@@ -76,12 +65,19 @@ public class Project {
 	public void setTechnologies(List<Technology> technologies) {
 		this.technologies = technologies;
 	}
-	public String getId() {
-		return id;
+	public Integer getTeamSize() {
+		return teamSize;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public void setTeamSize(Integer teamSize) {
+		this.teamSize = teamSize;
 	}
+	public Double getDuration() {
+		return duration;
+	}
+	public void setDuration(Double duration) {
+		this.duration = duration;
+	}
+	
 	
 
 }

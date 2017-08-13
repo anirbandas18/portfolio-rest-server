@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.teenthofabud.portfolio.model.collections.Institution;
 
-public class Education {
+public class EducationVO {
 	
 	private List<Institution> schools;
 	private List<Institution> universities;

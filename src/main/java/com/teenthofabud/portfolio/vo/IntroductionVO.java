@@ -3,7 +3,7 @@ package com.teenthofabud.portfolio.vo;
 import com.teenthofabud.portfolio.model.collections.Employee;
 import com.teenthofabud.portfolio.model.collections.Profile;
 
-public class Introduction {
+public class IntroductionVO {
 	
 	private Profile to;
 	private Employee of;
