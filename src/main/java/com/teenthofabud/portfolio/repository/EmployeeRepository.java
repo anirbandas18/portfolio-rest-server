@@ -1,9 +1,11 @@
 package com.teenthofabud.portfolio.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
-import com.teenthofabud.portfolio.model.collections.Employee;
+import com.teenthofabud.portfolio.model.collections.Freelancer;
 
-public interface EmployeeRepository extends MongoRepository<Employee, String> {
+@Repository
+public interface EmployeeRepository extends MongoRepository<Freelancer, String> {
 
 }

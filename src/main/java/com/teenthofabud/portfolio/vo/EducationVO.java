@@ -2,8 +2,12 @@ package com.teenthofabud.portfolio.vo;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.teenthofabud.portfolio.model.collections.Institution;
 
+@JsonRootName(value = "education")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class EducationVO {
 	
 	private List<Institution> schools;

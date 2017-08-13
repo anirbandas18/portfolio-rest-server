@@ -9,7 +9,7 @@ import com.teenthofabud.portfolio.model.fields.Location;
 import com.teenthofabud.portfolio.model.fields.SocialMedia;
 
 @Document
-public class Employee {
+public class Freelancer {
 	
 	@Id
 	private String id;

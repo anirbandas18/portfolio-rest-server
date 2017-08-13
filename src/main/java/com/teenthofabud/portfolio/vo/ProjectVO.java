@@ -2,9 +2,13 @@ package com.teenthofabud.portfolio.vo;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.teenthofabud.portfolio.model.collections.Technology;
 import com.teenthofabud.portfolio.model.fields.Time;
 
+@JsonRootName(value = "project")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ProjectVO {
 	
 	private Time from;

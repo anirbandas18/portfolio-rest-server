@@ -2,8 +2,12 @@ package com.teenthofabud.portfolio.vo;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.teenthofabud.portfolio.model.collections.Technology;
 
+@JsonRootName(value = "technologystack")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class StackVO {
 	
 	private List<Technology> frontend;

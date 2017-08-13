@@ -1,8 +1,12 @@
 package com.teenthofabud.portfolio.vo;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.teenthofabud.portfolio.model.fields.Employer;
 import com.teenthofabud.portfolio.model.fields.Time;
 
+@JsonRootName(value = "experience")
+@JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExperienceVO {
 	
 	private Employer under;
