@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.teenthofabud.portfolio.model.fields.Location;
+import com.teenthofabud.portfolio.model.fields.Profile;
 import com.teenthofabud.portfolio.model.fields.SocialMedia;
 
 @Document
@@ -21,6 +22,14 @@ public class Freelancer {
 	private String phoneNumber;
 	private List<String> languagesKnown;
 	private List<SocialMedia> socialLinks;
+	private Profile profile;
+	
+	public Profile getProfile() {
+		return profile;
+	}
+	public void setProfile(Profile profile) {
+		this.profile = profile;
+	}
 	public String getFirstName() {
 		return firstName;
 	}

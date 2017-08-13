@@ -27,7 +27,7 @@ public class ResumeServiceImpl implements ResumeService {
 		// TODO Auto-generated method stub
 		String resumeName = freelancerId + resumeFileExtension;
 		Path resumePath = Paths.get(resumeBaseLocation, resumeName);
-		byte[] resume = null;
+		byte[] resume = new byte[0];
 		try {
 			resume = Files.readAllBytes(resumePath);
 		} catch (IOException e) {
@@ -40,11 +40,10 @@ public class ResumeServiceImpl implements ResumeService {
 		// TODO Auto-generated method stub
 		String resumeName = freelancerId + resumeFileExtension;
 		Path resumePath = Paths.get(resumeBaseLocation, resumeName);
-		Path result = null;
+		Path result = Paths.get("");
 		try {
 			result = Files.write(resumePath, resume);
 		} catch (IOException e) {
-			result = resumePath;
 			throw new ResumeException(resumeExceptionTemplate, e);
 		}
 		Long size = result.toFile().length();

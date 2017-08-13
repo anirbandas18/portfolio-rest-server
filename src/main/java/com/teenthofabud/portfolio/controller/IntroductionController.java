@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teenthofabud.portfolio.exception.ResumeException;
+import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.service.ResumeService;
 import com.teenthofabud.portfolio.vo.IntroductionVO;
 
@@ -22,6 +23,9 @@ public class IntroductionController {
 	
 	@Autowired
 	private ResumeService resumeService;
+	
+	@Autowired
+	private FreelancerService introductionService;
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<IntroductionVO> getFreelancerIntroduction(@PathVariable String id) {
