@@ -10,6 +10,7 @@ public class FreelancerExceptionMessages {
 	private String detailsInvalid;
 	private String detailsEmpty;
 	private String exceptionTemplate;
+	private String idInvalid;
 	public String getDetailsInvalid() {
 		return detailsInvalid;
 	}
@@ -27,6 +28,12 @@ public class FreelancerExceptionMessages {
 	}
 	public void setExceptionTemplate(String exceptionTemplate) {
 		this.exceptionTemplate = exceptionTemplate;
+	}
+	public String getIdInvalid() {
+		return idInvalid;
+	}
+	public void setIdInvalid(String idInvalid) {
+		this.idInvalid = idInvalid;
 	}
 	
 	

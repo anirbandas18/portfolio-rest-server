@@ -8,9 +8,12 @@ import com.teenthofabud.portfolio.model.collections.Freelancer;
 @Service
 public interface FreelancerService {
 
-	public String postFreelancer(Freelancer freelancer) throws ServiceException;
+	public String createFreelancer(Freelancer freelancer) throws ServiceException;
 	
-	public Freelancer getFreelancer(String id) throws ServiceException;
+	public Freelancer readFreelancer(String id) throws ServiceException;
 	
+	public Boolean updateFreelancer(Freelancer freelancer) throws ServiceException;
+	
+	public Boolean deleteFreelancer(String id) throws ServiceException;
 	
 }

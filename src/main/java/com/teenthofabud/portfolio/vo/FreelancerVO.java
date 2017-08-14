@@ -9,6 +9,7 @@ public class FreelancerVO {
 	
 	private String name;
 	private String id;
+	private Boolean changed;
 	public String getId() {
 		return id;
 	}
@@ -20,6 +21,12 @@ public class FreelancerVO {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public Boolean getChanged() {
+		return changed;
+	}
+	public void setChanged(Boolean changed) {
+		this.changed = changed;
 	}
 	
 }

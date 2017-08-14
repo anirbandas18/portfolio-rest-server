@@ -1,5 +1,7 @@
 package com.teenthofabud.portfolio.service.impl;
 
+import java.util.Comparator;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -22,7 +24,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	private FreelancerExceptionMessages exceptionMessages; 
 
 	@Override
-	public String postFreelancer(Freelancer freelancer)  throws ServiceException{
+	public String createFreelancer(Freelancer freelancer)  throws ServiceException{
 		// TODO Auto-generated method stub
 		if(freelancer == null) {
 			Exception cause = new Exception(exceptionMessages.getDetailsEmpty());
@@ -33,7 +35,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	}
 
 	@Override
-	public Freelancer getFreelancer(String id)  throws ServiceException {
+	public Freelancer readFreelancer(String id)  throws ServiceException {
 		// TODO Auto-generated method stub
 		Freelancer freelancer = repository.findOne(id);
 		if(freelancer == null) {
@@ -43,4 +45,42 @@ public class FreelancerServiceImpl implements FreelancerService {
 		return freelancer;
 	}
 
+	@Override
+	public Boolean updateFreelancer(Freelancer freelancer) throws ServiceException {
+		// TODO Auto-generated method stub
+		if(freelancer == null) {
+			Exception cause = new Exception(exceptionMessages.getDetailsEmpty());
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
+		} else if (freelancer.getId().length() == 0) {
+			Exception cause = new Exception(exceptionMessages.getIdInvalid());
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
+		}
+		Freelancer updated = repository.save(freelancer);
+		Integer or = freelancerComparator.compare(freelancer, updated);
+		Boolean changed = or == 0 ? Boolean.FALSE : Boolean.TRUE;
+		return changed;
+	}
+
+	@Override
+	public Boolean deleteFreelancer(String id) throws ServiceException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Comparator<Freelancer> freelancerComparator = new Comparator<Freelancer>() {
+
+		@Override
+		public int compare(Freelancer o1, Freelancer o2) {
+			// TODO Auto-generated method stub
+			Integer id = o1.getId().compareTo(o2.getId());
+			Integer firstName = o1.getFirstName().compareTo(o2.getFirstName());
+			Integer lastName = o1.getLastName().compareTo(o2.getLastName());
+			Integer emailId = o1.getEmailId().compareTo(o2.getEmailId());
+			Integer phoneNumber = o1.getPhoneNumber().compareTo(o2.getPhoneNumber());
+			Integer or = id | firstName | lastName | emailId | phoneNumber;
+			return or;
+		}
+		
+	};
+	
 }
