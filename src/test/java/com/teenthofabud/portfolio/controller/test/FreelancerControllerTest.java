@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.controller.test;
+/*package com.teenthofabud.portfolio.controller.test;
 
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,13 +24,14 @@ public class FreelancerControllerTest {
 	public FreelancerService freelancerService;
 	
 	public void test( ) {
-		/*List<FileModel> filesInBaseDir = fileModelDataset();
+		List<FileModel> filesInBaseDir = fileModelDataset();
 		FileUploadMetadataModel uploadMetadata = new FileUploadMetadataModel();
 		uploadMetadata.setFilesInBaseDir(filesInBaseDir);
 		uploadMetadata.setFileChunkSize(testModel.getFileChunkSize());
 		String jsonString = objectMapper.writeValueAsString(uploadMetadata);
 		when(uploadService.getCompletelyUploadedFiles(testModel.getBaseDir())).thenReturn(filesInBaseDir);
 		mockMvc.perform(get("/upload/metadata/" + testModel.getBaseDir())).andDo(print()).andExpect(status().isOk())
-				.andExpect(content().json(jsonString));*/
+				.andExpect(content().json(jsonString));
 	}
 }
+*/
