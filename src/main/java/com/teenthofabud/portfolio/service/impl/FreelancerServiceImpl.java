@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.teenthofabud.portfolio.configuration.FreelancerExceptionMessages;
+import com.teenthofabud.portfolio.configuration.externalized.FreelancerExceptionMessages;
 import com.teenthofabud.portfolio.exception.ServiceException;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.repository.FreelancerRepository;
@@ -37,7 +37,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 		// TODO Auto-generated method stub
 		Freelancer freelancer = repository.findOne(id);
 		if(freelancer == null) {
-			Exception cause = new Exception(exceptionMessages.getDetailsInvalid() + id);
+			Exception cause = new Exception(String.format(exceptionMessages.getDetailsInvalid(), id));
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, cause);
 		}
 		return freelancer;

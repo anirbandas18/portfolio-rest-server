@@ -5,11 +5,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.teenthofabud.portfolio.configuration.externalized.ResumeExceptionMessages;
 import com.teenthofabud.portfolio.exception.ServiceException;
 import com.teenthofabud.portfolio.service.ResumeService;
 
@@ -17,40 +21,45 @@ import com.teenthofabud.portfolio.service.ResumeService;
 @Transactional(rollbackFor = {ServiceException.class})
 public class ResumeServiceImpl implements ResumeService {
 	
-	@Value("${resume.base.location}")
-	private String resumeBaseLocation;
+	@Value("${resume.file.location}")
+	private String resumeFileLocation;
 	
 	@Value("${resume.file.extension}")
 	private String resumeFileExtension;
 	
-	@Value("${resume.exception.template}")
-	private String resumeExceptionTemplate;
+	@Autowired
+	private ResumeExceptionMessages resumeMessages;
 	
 	public byte[] exportResume(String freelancerId) throws ServiceException {
 		// TODO Auto-generated method stub
 		String resumeName = freelancerId + resumeFileExtension;
-		Path resumePath = Paths.get(resumeBaseLocation, resumeName);
+		Path resumePath = Paths.get(resumeFileLocation, resumeName);
 		byte[] resume = new byte[0];
 		try {
 			resume = Files.readAllBytes(resumePath);
 		} catch (IOException e) {
-			throw new ServiceException(resumeExceptionTemplate, HttpStatus.INTERNAL_SERVER_ERROR, e);
+			throw new ServiceException(resumeMessages.getResumeExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e);
 		}
 		return resume;
 	}
 
-	public Long importResume(byte[] resume, String freelancerId) throws ServiceException {
+	public String importResume(MultipartFile resume, String freelancerId) throws ServiceException {
 		// TODO Auto-generated method stub
+		if(resume.isEmpty() || resume.getSize() == 0l) {
+			Exception cause = new Exception(resumeMessages.getResumeContentAbsent());
+			throw new ServiceException(resumeMessages.getResumeExceptionTemplate(), HttpStatus.UNPROCESSABLE_ENTITY, cause);
+		} 
 		String resumeName = freelancerId + resumeFileExtension;
-		Path resumePath = Paths.get(resumeBaseLocation, resumeName);
+		Path resumePath = Paths.get(resumeFileLocation, resumeName);
 		Path result = Paths.get("");
+		String md5 = "";
 		try {
-			result = Files.write(resumePath, resume);
+			result = Files.write(resumePath, resume.getBytes());
+			md5 = DigestUtils.md5DigestAsHex(resume.getBytes());
 		} catch (IOException e) {
-			throw new ServiceException(resumeExceptionTemplate, HttpStatus.INTERNAL_SERVER_ERROR, e);
+			throw new ServiceException(resumeMessages.getResumeExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e);
 		}
-		Long size = result.toFile().length();
-		return size;
+		return md5;
 	}
 
 }

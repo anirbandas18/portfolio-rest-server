@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.configuration;
+package com.teenthofabud.portfolio.configuration.externalized;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
