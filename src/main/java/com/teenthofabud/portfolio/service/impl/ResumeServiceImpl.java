@@ -51,10 +51,9 @@ public class ResumeServiceImpl implements ResumeService {
 		} 
 		String resumeName = freelancerId + resumeFileExtension;
 		Path resumePath = Paths.get(resumeFileLocation, resumeName);
-		Path result = Paths.get("");
 		String md5 = "";
 		try {
-			result = Files.write(resumePath, resume.getBytes());
+			Files.write(resumePath, resume.getBytes());
 			md5 = DigestUtils.md5DigestAsHex(resume.getBytes());
 		} catch (IOException e) {
 			throw new ServiceException(resumeMessages.getResumeExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e);

@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
 		String description = utilityServices.wrapServiceException(e);
 		Resource resource = new DescriptiveResource(description);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN.toString());
+		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
 		ResponseEntity<Resource> response = new ResponseEntity<>(resource, headers, e.getStatus());
 		return response;
 	}
