@@ -101,7 +101,7 @@
 		</plugins>
 		<finalName>portfolio-engine</finalName>
 	</build>
-	<description>backend engine implementing portfolio web serivces via RESTful APIs</description>
+	<description>backend engine exposing portfolio web serivces via RESTful APIs</description>
 	<scm>
 		<connection>https://github.com/anirbandas18/portfolio-rest-server.git</connection>
 	</scm>

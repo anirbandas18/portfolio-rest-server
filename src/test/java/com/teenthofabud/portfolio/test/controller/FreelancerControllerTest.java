@@ -18,6 +18,7 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -29,6 +30,7 @@ import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.test.model.FreelancerTestData;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
 
+@SpringBootTest
 @RunWith(SpringRunner.class)
 @WebMvcTest(FreelancerController.class)
 @ComponentScan(basePackages = {"com.teenthofabud.portfolio"})

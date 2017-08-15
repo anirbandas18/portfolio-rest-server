@@ -14,7 +14,7 @@ import com.teenthofabud.portfolio.repository.FreelancerRepository;
 import com.teenthofabud.portfolio.service.FreelancerService;
 
 @Component
-//@Transactional(rollbackFor = {ServiceException.class})
+@Transactional(rollbackFor = {ServiceException.class})
 public class FreelancerServiceImpl implements FreelancerService {
 	
 	@Autowired
@@ -31,7 +31,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
 		Freelancer tmp = repository.save(freelancer);
-		return tmp.getId();
+		return tmp.get_id();
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 		if(freelancer == null) {
 			Exception cause = new Exception(exceptionMessages.getDetailsEmpty());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
-		} else if (freelancer.getId().length() == 0) {
+		} else if (freelancer.get_id().length() == 0) {
 			Exception cause = new Exception(exceptionMessages.getIdInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
@@ -72,7 +72,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 		@Override
 		public int compare(Freelancer o1, Freelancer o2) {
 			// TODO Auto-generated method stub
-			Integer id = o1.getId().compareTo(o2.getId());
+			Integer id = o1.get_id().compareTo(o2.get_id());
 			Integer firstName = o1.getFirstName().compareTo(o2.getFirstName());
 			Integer lastName = o1.getLastName().compareTo(o2.getLastName());
 			Integer emailId = o1.getEmailId().compareTo(o2.getEmailId());

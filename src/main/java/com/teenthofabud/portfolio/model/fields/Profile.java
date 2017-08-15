@@ -2,7 +2,6 @@ package com.teenthofabud.portfolio.model.fields;
 
 public class Profile {
 	
-	private String id;
 	private String name;
 	private String overview;
 	private String link;
@@ -23,12 +22,6 @@ public class Profile {
 	}
 	public void setLink(String link) {
 		this.link = link;
-	}
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
 	}
 	
 }

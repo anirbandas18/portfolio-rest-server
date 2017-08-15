@@ -2,6 +2,7 @@ package com.teenthofabud.portfolio.model.collections;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,9 +12,8 @@ import com.teenthofabud.portfolio.model.fields.SocialMedia;
 
 @Document
 public class Freelancer {
-	
-	@Id
-	private String id;
+
+	private String _id;
 	private String firstName;
 	private String lastName;
 	private String photoURL;
@@ -78,11 +78,11 @@ public class Freelancer {
 	public void setSocialLinks(List<SocialMedia> socialLinks) {
 		this.socialLinks = socialLinks;
 	}
-	public String getId() {
-		return id;
+	public String get_id() {
+		return _id;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public void set_id(String _id) {
+		this._id = _id;
 	}
 
 }

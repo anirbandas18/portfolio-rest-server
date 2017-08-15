@@ -2,13 +2,12 @@ package com.teenthofabud.portfolio.model.collections;
 
 import java.util.List;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 public class Hire {
-	@Id
-	private String id;
+	
+	private String _id;
 	private Double consultationRate;
 	private Double developmentRate;
 	private String paymentURL;
@@ -44,11 +43,11 @@ public class Hire {
 	public void setStyle(List<String> style) {
 		this.style = style;
 	}
-	public String getId() {
-		return id;
+	public String get_id() {
+		return _id;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public void set_id(String _id) {
+		this._id = _id;
 	}
 	
 }
