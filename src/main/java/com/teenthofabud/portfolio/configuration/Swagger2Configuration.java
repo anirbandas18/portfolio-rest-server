@@ -1,6 +1,6 @@
 package com.teenthofabud.portfolio.configuration;
 
-import static springfox.documentation.builders.PathSelectors.regex;
+import static springfox.documentation.builders.PathSelectors.any;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,8 +16,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import static springfox.documentation.builders.PathSelectors.any;
-
 @Configuration
 @EnableSwagger2
 public class Swagger2Configuration {
@@ -25,7 +23,7 @@ public class Swagger2Configuration {
 	@Bean
     public Docket api() {
 		return new Docket(DocumentationType.SWAGGER_2)
-				.groupName("portfolio-api")
+				.groupName("external-api")
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.teenthofabud.portfolio.controller"))
                 .paths(any())

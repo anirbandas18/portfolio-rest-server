@@ -30,7 +30,7 @@ public class ResumeController {
 	@Autowired
 	private ResumeService resumeService;
 	
-	@ApiOperation(value = "upload freelancer's resume file", response = Freelancer.class, produces = "application/json", 
+	@ApiOperation(value = "upload freelancer's resume file", response = ResumeVO.class, produces = "application/json", 
 			notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Respond with checksum generated for the file alongwith it's size in bytes")
 	@PostMapping("/{id}")
 	public ResponseEntity<ResumeVO> uploadResume(
@@ -45,7 +45,7 @@ public class ResumeController {
 		return response;
 	}
 	
-	@ApiOperation(value = "download freelancer's resume file", response = Freelancer.class, produces = "application/json", 
+	@ApiOperation(value = "download freelancer's resume file", response = Resource.class, produces = "application/json", 
 			notes = "Download resume file of freelancer as identified by its respective ID from the file system")
 	@GetMapping("/{id}")
 	public ResponseEntity<Resource> downloadResume(
