@@ -18,7 +18,7 @@ import com.teenthofabud.portfolio.exception.ServiceException;
 import com.teenthofabud.portfolio.service.ResumeService;
 
 @Component
-@Transactional(rollbackFor = {ServiceException.class})
+//@Transactional(rollbackFor = {ServiceException.class})
 public class ResumeServiceImpl implements ResumeService {
 	
 	@Value("${resume.file.location}")

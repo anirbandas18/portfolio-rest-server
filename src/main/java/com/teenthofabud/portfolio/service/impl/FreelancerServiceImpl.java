@@ -14,7 +14,7 @@ import com.teenthofabud.portfolio.repository.FreelancerRepository;
 import com.teenthofabud.portfolio.service.FreelancerService;
 
 @Component
-@Transactional(rollbackFor = {ServiceException.class})
+//@Transactional(rollbackFor = {ServiceException.class})
 public class FreelancerServiceImpl implements FreelancerService {
 	
 	@Autowired
