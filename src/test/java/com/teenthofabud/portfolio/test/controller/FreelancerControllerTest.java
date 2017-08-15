@@ -63,12 +63,12 @@ public class FreelancerControllerTest {
 	@Test
 	public void shouldReturnFreelancerStatusAndHttpOKWhenFreelancerDetailsIsPosted( ) throws Exception{
 		FreelancerVO freelancerVO = new FreelancerVO();
-		freelancerVO.setId(freelancerModel.getId());
+		freelancerVO.setId(freelancerModel.get_id());
 		freelancerVO.setName(freelancerModel.getFirstName().concat(freelancerModel.getLastName()));
 		freelancerVO.setChanged(Boolean.TRUE);
 		String expectedResponse = objectMapper.writeValueAsString(freelancerVO);
 		when(freelancerService.createFreelancer(freelancerModel))
-			.thenReturn(freelancerModel.getId());
+			.thenReturn(freelancerModel.get_id());
 		mockMvc.perform(post("/portfolio/v1/freelancer", freelancerModel))
 			.andDo(print())
 			.andExpect(status().isOk())
