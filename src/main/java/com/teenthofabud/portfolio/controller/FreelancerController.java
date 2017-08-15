@@ -29,8 +29,7 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 @RequestMapping("/freelancer")
-@Api(consumes = "application/json", produces = "application/json", protocols = "http", tags = {
-		"Freelancer" }, description = "REST to CRUD mapping on freelancer and it's resume")
+@Api(consumes = "application/json", produces = "application/json", protocols = "http", description = "REST to CRUD mapping on freelancer and it's resume")
 public class FreelancerController {
 
 	@Autowired
@@ -40,7 +39,7 @@ public class FreelancerController {
 	private FreelancerService freelancerService;
 
 	@ApiOperation(value = "read freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Read details of freelancer from database as identified by its ID and expose it ")
+			notes = "Read details of freelancer from database as identified by its ID and expose it")
 	@GetMapping("/{id}")
 	public ResponseEntity<Freelancer> getFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException {
@@ -51,7 +50,7 @@ public class FreelancerController {
 	}
 
 	@ApiOperation(value = "delete freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Delete details of freelancer from database as identified by its ID and expose the operation status ")
+			notes = "Delete details of freelancer from database as identified by its ID and expose the operation status")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<FreelancerVO> deleteFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException {
@@ -64,7 +63,7 @@ public class FreelancerController {
 	}
 	
 	@ApiOperation(value = "create freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Create details of freelancer in database with corresponding data passed as JSON in request body ")
+			notes = "Create details of freelancer in database with corresponding data passed as JSON in request body")
 	@PostMapping
 	public ResponseEntity<FreelancerVO> postFreelancerDetails(
 			@ApiParam(value = "freelancer details", required = true) @RequestBody Freelancer freelancer)
@@ -74,12 +73,13 @@ public class FreelancerController {
 		FreelancerVO f = new FreelancerVO();
 		f.setId(id);
 		f.setName(name);
+		f.setChanged(Boolean.TRUE);
 		ResponseEntity<FreelancerVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(f);
 		return response;
 	}
 
 	@ApiOperation(value = "update freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Update details of freelancer in database with corresponding data passed as JSON in request body ")
+			notes = "Update details of freelancer in database with corresponding data passed as JSON in request body")
 	@PutMapping
 	public ResponseEntity<FreelancerVO> putFreelancerDetails(
 			@ApiParam(value = "freelancer details", required = true) @RequestBody Freelancer freelancer)

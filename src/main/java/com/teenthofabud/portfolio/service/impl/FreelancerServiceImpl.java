@@ -77,7 +77,9 @@ public class FreelancerServiceImpl implements FreelancerService {
 			Integer lastName = o1.getLastName().compareTo(o2.getLastName());
 			Integer emailId = o1.getEmailId().compareTo(o2.getEmailId());
 			Integer phoneNumber = o1.getPhoneNumber().compareTo(o2.getPhoneNumber());
-			Integer or = id | firstName | lastName | emailId | phoneNumber;
+			Integer state = o1.getCurrentLocation().getState().compareTo(o2.getCurrentLocation().getState());
+			Integer country = o1.getCurrentLocation().getCountry().compareTo(o2.getCurrentLocation().getCountry());
+			Integer or = id | firstName | lastName | emailId | phoneNumber | state | country;
 			return or;
 		}
 		
