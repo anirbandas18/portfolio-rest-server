@@ -10,6 +10,6 @@ public interface ResumeService {
 
 	public byte[] exportResume(String freelancerId) throws ServiceException;
 	
-	public String importResume(MultipartFile resume, String freelancerId)  throws ServiceException;
+	public String importResume(MultipartFile resume, String freelancerId) throws ServiceException;
 	
 }

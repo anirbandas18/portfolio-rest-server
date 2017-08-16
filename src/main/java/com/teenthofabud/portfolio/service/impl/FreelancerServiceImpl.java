@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.service.impl;
+/*package com.teenthofabud.portfolio.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -91,3 +91,4 @@ public class FreelancerServiceImpl implements FreelancerService {
 	}
 
 }
+*/

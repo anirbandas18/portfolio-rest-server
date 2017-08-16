@@ -2,7 +2,7 @@ package com.teenthofabud.portfolio.exception;
 
 import org.springframework.http.HttpStatus;
 
-public class ServiceException extends Exception {
+public class ServiceException extends RuntimeException {
 
 	/**
 	 * 
@@ -10,7 +10,7 @@ public class ServiceException extends Exception {
 	private static final long serialVersionUID = 1L;
 	private String message;
 	private HttpStatus status;
-	private Throwable cause;
+	private String reason;
 	public String getMessage() {
 		return message;
 	}
@@ -23,17 +23,22 @@ public class ServiceException extends Exception {
 	public void setStatus(HttpStatus status) {
 		this.status = status;
 	}
-	public Throwable getCause() {
-		return cause;
+	public String getReason() {
+		return reason;
 	}
-	public void setCause(Throwable cause) {
-		this.cause = cause;
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
-	public ServiceException(String message, HttpStatus status, Throwable cause) {
+	public ServiceException(String message, HttpStatus status, String reason) {
 		super();
 		this.message = message;
 		this.status = status;
-		this.cause = cause;
+		this.reason = reason;
 	}
+	/*@Override
+	public synchronized Throwable fillInStackTrace() {
+		// TODO Auto-generated method stub
+		return this;
+	}*/
 	
 }

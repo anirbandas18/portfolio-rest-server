@@ -37,8 +37,8 @@ public class ResumeServiceImpl implements ResumeService {
 	public byte[] exportResume(String freelancerId) throws ServiceException {
 		// TODO Auto-generated method stub
 		if (freelancerId == null || freelancerId.length() == 0) {
-			Exception cause = new Exception(resumeMessages.getIdEmpty());
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
+			//Exception cause = new Exception(resumeMessages.getIdEmpty());
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, resumeMessages.getIdEmpty());
 		}
 		if(freelancerRepository.exists(freelancerId)) {
 			String resumeName = freelancerId + resumeFileExtension;
@@ -47,23 +47,23 @@ public class ResumeServiceImpl implements ResumeService {
 			try {
 				resume = Files.readAllBytes(resumePath);
 			} catch (IOException e) {
-				throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+				throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 			}
 			return resume;
 		} else {
-			Exception cause = new Exception(String.format(resumeMessages.getIdInvalid(), freelancerId));
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, cause);
+			//Exception cause = new Exception(String.format(resumeMessages.getIdInvalid(), freelancerId));
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, String.format(resumeMessages.getIdInvalid(), freelancerId));
 		}
 	}
 
 	public String importResume(MultipartFile resume, String freelancerId) throws ServiceException {
 		// TODO Auto-generated method stub
 		if (freelancerId == null || freelancerId.length() == 0) {
-			Exception cause = new Exception(resumeMessages.getIdEmpty());
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
+			//Exception cause = new Exception(resumeMessages.getIdEmpty());
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, resumeMessages.getIdEmpty());
 		} else if(resume.isEmpty() || resume.getSize() == 0l) {
-			Exception cause = new Exception(resumeMessages.getContentAbsent());
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.UNPROCESSABLE_ENTITY, cause);
+			//Exception cause = new Exception(resumeMessages.getContentAbsent());
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.UNPROCESSABLE_ENTITY, resumeMessages.getContentAbsent());
 		} 
 		
 		if(freelancerRepository.exists(freelancerId)) {
@@ -74,12 +74,12 @@ public class ResumeServiceImpl implements ResumeService {
 				Files.write(resumePath, resume.getBytes());
 				md5 = DigestUtils.md5DigestAsHex(resume.getBytes());
 			} catch (IOException e) {
-				throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e);
+				throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 			}
 			return md5;
 		} else {
-			Exception cause = new Exception(String.format(resumeMessages.getIdInvalid(), freelancerId));
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, cause);
+			//Exception cause = new Exception(String.format(resumeMessages.getIdInvalid(), freelancerId));
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, String.format(resumeMessages.getIdInvalid(), freelancerId));
 		}
 	}
 

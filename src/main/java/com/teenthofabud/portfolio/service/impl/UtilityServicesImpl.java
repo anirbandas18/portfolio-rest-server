@@ -16,7 +16,7 @@ public class UtilityServicesImpl implements UtilityServices {
 	@Override
 	public String wrapServiceException(ServiceException e) {
 		String message = e.getMessage();
-		message = message.replaceAll(exceptionCausePlaceholder, e.getCause().getMessage());
+		message = message.replaceAll(exceptionCausePlaceholder, e.getReason());
 		return message;
 	}
 

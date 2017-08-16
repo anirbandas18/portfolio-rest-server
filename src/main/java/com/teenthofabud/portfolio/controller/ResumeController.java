@@ -1,8 +1,10 @@
 package com.teenthofabud.portfolio.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +28,14 @@ import io.swagger.annotations.ApiParam;
 @Api(consumes = "application/json", produces = "application/json", protocols = "http", description = "REST endpoints for exchanging resume file of freelancer", tags = { "Resume" })
 public class ResumeController {
 
+	/*@Autowired
+	private UtilityServices utilityServices;*/
+	
 	@Autowired
 	private ResumeService resumeService;
+	
+	@Value("${resume.file.extension}")
+	private String resumeFileExtension;
 	
 	@ApiOperation(value = "upload freelancer's resume file", response = ResumeVO.class, produces = "application/json", 
 			notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Respond with checksum generated for the file alongwith it's size in bytes")
@@ -52,12 +60,26 @@ public class ResumeController {
 	public ResponseEntity<Resource> downloadResume(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException {
 		byte[] resume = resumeService.exportResume(id);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentDispositionFormData("attachment", id + resumeFileExtension);
+		headers.setContentLength(resume.length);
+		headers.setContentType(MediaType.APPLICATION_PDF);
 		Resource resource = new ByteArrayResource(resume);
 		ResponseEntity<Resource> response = ResponseEntity.ok()
-				.contentLength(resume.length)
-				.contentType(MediaType.parseMediaType(MediaType.APPLICATION_PDF_VALUE))
+				.headers(headers)
 				.body(resource);
 		return response;
 	}
+	
+	/*@ExceptionHandler(ServiceException.class)
+	public ResponseEntity<Resource> handleServiceException(ServiceException e) {
+		String description = utilityServices.wrapServiceException(e);
+		System.out.println(description);
+		Resource resource = new DescriptiveResource(description);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE);
+		ResponseEntity<Resource> response = new ResponseEntity<>(resource, headers, e.getStatus());
+		return response;
+	}*/
 
 }
