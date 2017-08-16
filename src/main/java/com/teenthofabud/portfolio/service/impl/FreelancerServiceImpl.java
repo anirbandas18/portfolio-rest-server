@@ -1,7 +1,5 @@
 package com.teenthofabud.portfolio.service.impl;
 
-import java.util.Comparator;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -12,6 +10,7 @@ import com.teenthofabud.portfolio.exception.ServiceException;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.repository.FreelancerRepository;
 import com.teenthofabud.portfolio.service.FreelancerService;
+import com.teenthofabud.portfolio.service.UtilityServices;
 
 @Component
 @Transactional(rollbackFor = {ServiceException.class})
@@ -22,6 +21,9 @@ public class FreelancerServiceImpl implements FreelancerService {
 
 	@Autowired
 	private FreelancerExceptionMessages exceptionMessages; 
+	
+	@Autowired
+	private UtilityServices utilityServices;
 
 	@Override
 	public String createFreelancer(Freelancer freelancer)  throws ServiceException{
@@ -63,7 +65,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 				throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 			}
 			Freelancer updated = repository.save(freelancer);
-			Integer or = freelancerComparator.compare(freelancer, updated);
+			Integer or = utilityServices.compareFreelancers(freelancer, updated);
 			Boolean changed = or == 0 ? Boolean.FALSE : Boolean.TRUE;
 			return changed;
 		} else  {
@@ -75,7 +77,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	@Override
 	public Boolean deleteFreelancer(String id) throws ServiceException {
 		// TODO Auto-generated method stub
-		if (id == null && id.length() == 0) {
+		if (id == null || id.length() == 0) {
 			Exception cause = new Exception(exceptionMessages.getIdInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
@@ -88,23 +90,4 @@ public class FreelancerServiceImpl implements FreelancerService {
 		}
 	}
 
-	private Comparator<Freelancer> freelancerComparator = new Comparator<Freelancer>() {
-
-		@Override
-		public int compare(Freelancer o1, Freelancer o2) {
-			// TODO Auto-generated method stub
-			Integer id = o1.getId().compareTo(o2.getId());
-			Integer firstName = o1.getFirstName().compareTo(o2.getFirstName());
-			Integer lastName = o1.getLastName().compareTo(o2.getLastName());
-			Integer emailId = o1.getEmailId().compareTo(o2.getEmailId());
-			Integer phoneNumber = o1.getPhoneNumber().compareTo(o2.getPhoneNumber());
-			Integer state = o1.getCurrentLocation().getState().compareTo(o2.getCurrentLocation().getState());
-			Integer country = o1.getCurrentLocation().getCountry().compareTo(o2.getCurrentLocation().getCountry());
-			Integer city = o1.getCurrentLocation().getCity().compareTo(o2.getCurrentLocation().getCity());
-			Integer or = id & firstName & lastName & emailId & phoneNumber & state & country & city;
-			return or;
-		}
-		
-	};
-	
 }
