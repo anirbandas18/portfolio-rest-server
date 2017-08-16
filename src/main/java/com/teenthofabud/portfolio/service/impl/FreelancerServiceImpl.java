@@ -39,7 +39,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	@Override
 	public Freelancer readFreelancer(String id)  throws ServiceException {
 		// TODO Auto-generated method stub
-		if (id == null && id.length() == 0) {
+		if (id == null || id.length() == 0) {
 			Exception cause = new Exception(exceptionMessages.getIdInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
@@ -55,7 +55,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	@Override
 	public Boolean updateFreelancer(String id, Freelancer freelancer) throws ServiceException {
 		// TODO Auto-generated method stub
-		if (id == null && id.length() == 0) {
+		if (id == null || id.length() == 0) {
 			Exception cause = new Exception(exceptionMessages.getIdInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
