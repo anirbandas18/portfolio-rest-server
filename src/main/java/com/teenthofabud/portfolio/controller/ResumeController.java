@@ -37,10 +37,12 @@ public class ResumeController {
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
 			throws ServiceException {
 		String md5 = resumeService.importResume(resume, id);
-		ResumeVO f = new ResumeVO();
-		f.setCheckSum(md5);
-		f.setSize(resume.getSize());
-		ResponseEntity<ResumeVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(f);
+		ResumeVO r = new ResumeVO();
+		r.setCheckSum(md5);
+		r.setSize(resume.getSize());
+		ResponseEntity<ResumeVO> response = ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(r);
 		return response;
 	}
 	
@@ -51,8 +53,10 @@ public class ResumeController {
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException {
 		byte[] resume = resumeService.exportResume(id);
 		Resource resource = new ByteArrayResource(resume);
-		ResponseEntity<Resource> response = ResponseEntity.ok().contentLength(resume.length)
-				.contentType(MediaType.parseMediaType(MediaType.APPLICATION_PDF_VALUE)).body(resource);
+		ResponseEntity<Resource> response = ResponseEntity.ok()
+				.contentLength(resume.length)
+				.contentType(MediaType.parseMediaType(MediaType.APPLICATION_PDF_VALUE))
+				.body(resource);
 		return response;
 	}
 

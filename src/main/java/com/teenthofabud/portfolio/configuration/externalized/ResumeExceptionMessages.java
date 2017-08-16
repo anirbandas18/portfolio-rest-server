@@ -7,19 +7,34 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "resume")
 public class ResumeExceptionMessages {
 	
-	private String resumeExceptionTemplate;
-	private String resumeContentAbsent;
-	public String getResumeExceptionTemplate() {
-		return resumeExceptionTemplate;
+	private String exceptionTemplate;
+	private String contentAbsent;
+	private String idInvalid;
+	private String idEmpty;
+	public String getExceptionTemplate() {
+		return exceptionTemplate;
 	}
-	public void setResumeExceptionTemplate(String resumeExceptionTemplate) {
-		this.resumeExceptionTemplate = resumeExceptionTemplate;
+	public void setExceptionTemplate(String exceptionTemplate) {
+		this.exceptionTemplate = exceptionTemplate;
 	}
-	public String getResumeContentAbsent() {
-		return resumeContentAbsent;
+	public String getContentAbsent() {
+		return contentAbsent;
 	}
-	public void setResumeContentAbsent(String resumeContentAbsent) {
-		this.resumeContentAbsent = resumeContentAbsent;
+	public void setContentAbsent(String contentAbsent) {
+		this.contentAbsent = contentAbsent;
 	}
+	public String getIdInvalid() {
+		return idInvalid;
+	}
+	public void setIdInvalid(String idInvalid) {
+		this.idInvalid = idInvalid;
+	}
+	public String getIdEmpty() {
+		return idEmpty;
+	}
+	public void setIdEmpty(String idEmpty) {
+		this.idEmpty = idEmpty;
+	}
+	
 
 }
