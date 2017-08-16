@@ -37,7 +37,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	@Override
 	public Freelancer readFreelancer(String id)  throws ServiceException {
 		// TODO Auto-generated method stub
-		if (id == null || id.length() == 0) {
+		if (id == null && id.length() == 0) {
 			Exception cause = new Exception(exceptionMessages.getIdInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
@@ -53,7 +53,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	@Override
 	public Boolean updateFreelancer(String id, Freelancer freelancer) throws ServiceException {
 		// TODO Auto-generated method stub
-		if (id == null || id.length() == 0) {
+		if (id == null && id.length() == 0) {
 			Exception cause = new Exception(exceptionMessages.getIdInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
@@ -75,7 +75,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	@Override
 	public Boolean deleteFreelancer(String id) throws ServiceException {
 		// TODO Auto-generated method stub
-		if (id == null || id.length() == 0) {
+		if (id == null && id.length() == 0) {
 			Exception cause = new Exception(exceptionMessages.getIdInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
@@ -101,7 +101,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 			Integer state = o1.getCurrentLocation().getState().compareTo(o2.getCurrentLocation().getState());
 			Integer country = o1.getCurrentLocation().getCountry().compareTo(o2.getCurrentLocation().getCountry());
 			Integer city = o1.getCurrentLocation().getCity().compareTo(o2.getCurrentLocation().getCity());
-			Integer or = id | firstName | lastName | emailId | phoneNumber | state | country | city;
+			Integer or = id & firstName & lastName & emailId & phoneNumber & state & country & city;
 			return or;
 		}
 		
