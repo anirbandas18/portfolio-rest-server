@@ -77,7 +77,7 @@ public class FreelancerController {
 			throws ServiceException {
 		Boolean changed = freelancerService.updateFreelancer(freelancer);
 		FreelancerVO f = new FreelancerVO();
-		f.setId(freelancer.get_id());
+		f.setId(freelancer.getId());
 		f.setChanged(changed);
 		ResponseEntity<FreelancerVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(f);
 		return response;

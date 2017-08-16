@@ -2,10 +2,10 @@ package com.teenthofabud.portfolio.model.collections;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.teenthofabud.portfolio.model.fields.Location;
 import com.teenthofabud.portfolio.model.fields.Profile;
 import com.teenthofabud.portfolio.model.fields.SocialMedia;
@@ -13,7 +13,9 @@ import com.teenthofabud.portfolio.model.fields.SocialMedia;
 @Document
 public class Freelancer {
 
-	private String _id;
+	@Id
+	@JsonIgnore
+	private String id;
 	private String firstName;
 	private String lastName;
 	private String photoURL;
@@ -78,11 +80,11 @@ public class Freelancer {
 	public void setSocialLinks(List<SocialMedia> socialLinks) {
 		this.socialLinks = socialLinks;
 	}
-	public String get_id() {
-		return _id;
+	public String getId() {
+		return id;
 	}
-	public void set_id(String _id) {
-		this._id = _id;
+	public void setId(String id) {
+		this.id = id;
 	}
 
 }

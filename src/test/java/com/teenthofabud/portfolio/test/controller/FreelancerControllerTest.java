@@ -18,7 +18,6 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -30,7 +29,6 @@ import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.test.model.FreelancerTestData;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
 
-@SpringBootTest
 @RunWith(SpringRunner.class)
 @WebMvcTest(FreelancerController.class)
 @ComponentScan(basePackages = {"com.teenthofabud.portfolio"})
@@ -63,12 +61,12 @@ public class FreelancerControllerTest {
 	@Test
 	public void shouldReturnFreelancerStatusAndHttpOKWhenFreelancerDetailsIsPosted( ) throws Exception{
 		FreelancerVO freelancerVO = new FreelancerVO();
-		freelancerVO.setId(freelancerModel.get_id());
+		freelancerVO.setId(freelancerModel.getId());
 		freelancerVO.setName(freelancerModel.getFirstName().concat(freelancerModel.getLastName()));
 		freelancerVO.setChanged(Boolean.TRUE);
 		String expectedResponse = objectMapper.writeValueAsString(freelancerVO);
 		when(freelancerService.createFreelancer(freelancerModel))
-			.thenReturn(freelancerModel.get_id());
+			.thenReturn(freelancerModel.getId());
 		mockMvc.perform(post("/portfolio/v1/freelancer", freelancerModel))
 			.andDo(print())
 			.andExpect(status().isOk())
