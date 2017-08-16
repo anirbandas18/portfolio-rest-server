@@ -27,44 +27,65 @@ public class FreelancerServiceImpl implements FreelancerService {
 	public String createFreelancer(Freelancer freelancer)  throws ServiceException{
 		// TODO Auto-generated method stub
 		if(freelancer == null) {
-			Exception cause = new Exception(exceptionMessages.getDetailsEmpty());
+			Exception cause = new Exception(exceptionMessages.getDetailsInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
-		Freelancer tmp = repository.save(freelancer);
+		Freelancer tmp = repository.insert(freelancer);
 		return tmp.getId();
 	}
 
 	@Override
 	public Freelancer readFreelancer(String id)  throws ServiceException {
 		// TODO Auto-generated method stub
-		Freelancer freelancer = repository.findOne(id);
-		if(freelancer == null) {
-			Exception cause = new Exception(String.format(exceptionMessages.getDetailsInvalid(), id));
-			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, cause);
-		}
-		return freelancer;
-	}
-
-	@Override
-	public Boolean updateFreelancer(Freelancer freelancer) throws ServiceException {
-		// TODO Auto-generated method stub
-		if(freelancer == null) {
-			Exception cause = new Exception(exceptionMessages.getDetailsEmpty());
-			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
-		} else if (freelancer.getId().length() == 0) {
+		if (id == null || id.length() == 0) {
 			Exception cause = new Exception(exceptionMessages.getIdInvalid());
 			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
 		}
-		Freelancer updated = repository.save(freelancer);
-		Integer or = freelancerComparator.compare(freelancer, updated);
-		Boolean changed = or == 0 ? Boolean.FALSE : Boolean.TRUE;
-		return changed;
+		if(repository.exists(id)) {
+			Freelancer freelancer = repository.findOne(id);
+			return freelancer;
+		} else  {
+			Exception cause = new Exception(String.format(exceptionMessages.getDetailsEmpty(), id));
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, cause);
+		}
+	}
+
+	@Override
+	public Boolean updateFreelancer(String id, Freelancer freelancer) throws ServiceException {
+		// TODO Auto-generated method stub
+		if (id == null || id.length() == 0) {
+			Exception cause = new Exception(exceptionMessages.getIdInvalid());
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
+		}
+		if(repository.exists(id)) {
+			if(freelancer == null) {
+				Exception cause = new Exception(exceptionMessages.getDetailsInvalid());
+				throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
+			}
+			Freelancer updated = repository.save(freelancer);
+			Integer or = freelancerComparator.compare(freelancer, updated);
+			Boolean changed = or == 0 ? Boolean.FALSE : Boolean.TRUE;
+			return changed;
+		} else  {
+			Exception cause = new Exception(String.format(exceptionMessages.getDetailsEmpty(), id));
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, cause);
+		}
 	}
 
 	@Override
 	public Boolean deleteFreelancer(String id) throws ServiceException {
 		// TODO Auto-generated method stub
-		return null;
+		if (id == null || id.length() == 0) {
+			Exception cause = new Exception(exceptionMessages.getIdInvalid());
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, cause);
+		}
+		if(repository.exists(id)) {
+			repository.delete(id);
+			return !repository.exists(id);
+		} else  {
+			Exception cause = new Exception(String.format(exceptionMessages.getDetailsEmpty(), id));
+			throw new ServiceException(exceptionMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, cause);
+		}
 	}
 
 	private Comparator<Freelancer> freelancerComparator = new Comparator<Freelancer>() {
@@ -79,7 +100,8 @@ public class FreelancerServiceImpl implements FreelancerService {
 			Integer phoneNumber = o1.getPhoneNumber().compareTo(o2.getPhoneNumber());
 			Integer state = o1.getCurrentLocation().getState().compareTo(o2.getCurrentLocation().getState());
 			Integer country = o1.getCurrentLocation().getCountry().compareTo(o2.getCurrentLocation().getCountry());
-			Integer or = id | firstName | lastName | emailId | phoneNumber | state | country;
+			Integer city = o1.getCurrentLocation().getCity().compareTo(o2.getCurrentLocation().getCity());
+			Integer or = id | firstName | lastName | emailId | phoneNumber | state | country | city;
 			return or;
 		}
 		

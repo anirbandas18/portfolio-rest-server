@@ -12,7 +12,7 @@ public interface FreelancerService {
 	
 	public Freelancer readFreelancer(String id) throws ServiceException;
 	
-	public Boolean updateFreelancer(Freelancer freelancer) throws ServiceException;
+	public Boolean updateFreelancer(String id, Freelancer freelancer) throws ServiceException;
 	
 	public Boolean deleteFreelancer(String id) throws ServiceException;
 	

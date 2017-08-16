@@ -70,12 +70,13 @@ public class FreelancerController {
 	}
 
 	@ApiOperation(value = "update freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Update details of freelancer in database with corresponding data passed as JSON in request body")
-	@PutMapping
+			notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body")
+	@PutMapping("/{id}")
 	public ResponseEntity<FreelancerVO> putFreelancerDetails(
+			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id,
 			@ApiParam(value = "freelancer details", required = true) @RequestBody Freelancer freelancer)
 			throws ServiceException {
-		Boolean changed = freelancerService.updateFreelancer(freelancer);
+		Boolean changed = freelancerService.updateFreelancer(id, freelancer);
 		FreelancerVO f = new FreelancerVO();
 		f.setId(freelancer.getId());
 		f.setChanged(changed);
