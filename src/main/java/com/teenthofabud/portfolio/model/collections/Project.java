@@ -2,14 +2,18 @@ package com.teenthofabud.portfolio.model.collections;
 
 import java.util.List;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.teenthofabud.portfolio.model.fields.Time;
 
 @Document
 public class Project {
 	
-	private String _id;
+	@Id
+	@JsonIgnore
+	private String id;
 	private Time from;
 	private Time to;
 	private String name;
@@ -74,12 +78,11 @@ public class Project {
 	public void setTechnologies(List<Technology> technologies) {
 		this.technologies = technologies;
 	}
-	public String get_id() {
-		return _id;
+	public String getId() {
+		return id;
 	}
-	public void set_id(String _id) {
-		this._id = _id;
+	public void setId(String id) {
+		this.id = id;
 	}
-	
 
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.teenthofabud.portfolio.exception.ServiceException;
-import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.service.ResumeService;
 import com.teenthofabud.portfolio.vo.ResumeVO;
 

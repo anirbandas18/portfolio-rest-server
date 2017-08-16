@@ -1,13 +1,17 @@
 package com.teenthofabud.portfolio.model.collections;
 
+import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.teenthofabud.portfolio.model.fields.Time;
 
 @Document
 public class Institution {
 	
-	private String _id;
+	@Id
+	@JsonIgnore
+	private String id;
 	private String name;
 	private Time start;
 	private Time end;
@@ -64,11 +68,11 @@ public class Institution {
 	public void setLogoURL(String logoURL) {
 		this.logoURL = logoURL;
 	}
-	public String get_id() {
-		return _id;
+	public String getId() {
+		return id;
 	}
-	public void set_id(String _id) {
-		this._id = _id;
+	public void setId(String id) {
+		this.id = id;
 	}
-	
+
 }
