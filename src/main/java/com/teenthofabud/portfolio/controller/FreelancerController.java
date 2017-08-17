@@ -1,4 +1,4 @@
-/*package com.teenthofabud.portfolio.controller;
+package com.teenthofabud.portfolio.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -85,4 +85,3 @@ public class FreelancerController {
 	}
 
 }
-*/

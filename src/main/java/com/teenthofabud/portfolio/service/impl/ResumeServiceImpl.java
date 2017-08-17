@@ -19,54 +19,55 @@ import com.teenthofabud.portfolio.repository.FreelancerRepository;
 import com.teenthofabud.portfolio.service.ResumeService;
 
 @Component
-@Transactional(rollbackFor = {ServiceException.class})
+@Transactional(rollbackFor = { ServiceException.class })
 public class ResumeServiceImpl implements ResumeService {
-	
+
 	@Value("${resume.file.location}")
 	private String resumeFileLocation;
-	
+
 	@Value("${resume.file.extension}")
 	private String resumeFileExtension;
-	
+
 	@Autowired
 	private ResumeExceptionMessages resumeMessages;
-	
+
 	@Autowired
 	private FreelancerRepository freelancerRepository;
-	
+
 	public byte[] exportResume(String freelancerId) throws ServiceException {
 		// TODO Auto-generated method stub
 		if (freelancerId == null || freelancerId.length() == 0) {
-			//Exception cause = new Exception(resumeMessages.getIdEmpty());
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, resumeMessages.getIdEmpty());
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST,
+					resumeMessages.getIdEmpty());
 		}
-		if(freelancerRepository.exists(freelancerId)) {
+		if (freelancerRepository.exists(freelancerId)) {
 			String resumeName = freelancerId + resumeFileExtension;
 			Path resumePath = Paths.get(resumeFileLocation, resumeName);
 			byte[] resume = new byte[0];
 			try {
 				resume = Files.readAllBytes(resumePath);
 			} catch (IOException e) {
-				throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+				throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR,
+						e.getMessage());
 			}
 			return resume;
 		} else {
-			//Exception cause = new Exception(String.format(resumeMessages.getIdInvalid(), freelancerId));
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, String.format(resumeMessages.getIdInvalid(), freelancerId));
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND,
+					String.format(resumeMessages.getIdInvalid(), freelancerId));
 		}
 	}
 
 	public String importResume(MultipartFile resume, String freelancerId) throws ServiceException {
 		// TODO Auto-generated method stub
 		if (freelancerId == null || freelancerId.length() == 0) {
-			//Exception cause = new Exception(resumeMessages.getIdEmpty());
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST, resumeMessages.getIdEmpty());
-		} else if(resume.isEmpty() || resume.getSize() == 0l) {
-			//Exception cause = new Exception(resumeMessages.getContentAbsent());
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.UNPROCESSABLE_ENTITY, resumeMessages.getContentAbsent());
-		} 
-		
-		if(freelancerRepository.exists(freelancerId)) {
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.BAD_REQUEST,
+					resumeMessages.getIdEmpty());
+		} else if (resume.isEmpty() || resume.getSize() == 0l) {
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.UNPROCESSABLE_ENTITY,
+					resumeMessages.getContentAbsent());
+		}
+
+		if (freelancerRepository.exists(freelancerId)) {
 			String resumeName = freelancerId + resumeFileExtension;
 			Path resumePath = Paths.get(resumeFileLocation, resumeName);
 			String md5 = "";
@@ -74,12 +75,13 @@ public class ResumeServiceImpl implements ResumeService {
 				Files.write(resumePath, resume.getBytes());
 				md5 = DigestUtils.md5DigestAsHex(resume.getBytes());
 			} catch (IOException e) {
-				throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+				throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.INTERNAL_SERVER_ERROR,
+						e.getMessage());
 			}
 			return md5;
 		} else {
-			//Exception cause = new Exception(String.format(resumeMessages.getIdInvalid(), freelancerId));
-			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND, String.format(resumeMessages.getIdInvalid(), freelancerId));
+			throw new ServiceException(resumeMessages.getExceptionTemplate(), HttpStatus.NOT_FOUND,
+					String.format(resumeMessages.getIdInvalid(), freelancerId));
 		}
 	}
 

@@ -20,7 +20,7 @@ public class GlobalRestExceptionHandler {
 	@ExceptionHandler(value = ServiceException.class)
 	public ResponseEntity<?> handleServiceException(ServiceException e) {
 		String description = utilityServices.wrapServiceException(e);
-		ErrorVO body = new ErrorVO(description);
+		ErrorVO body = new ErrorVO(e.getStatus().value(), description);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		ResponseEntity<ErrorVO> response = new ResponseEntity<>(body, headers, e.getStatus());
