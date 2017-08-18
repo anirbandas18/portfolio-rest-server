@@ -95,9 +95,16 @@ public class FreelancerController {
 	@PutMapping("/{id}")
 	public ResponseEntity<SuccessVO> putFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id,
-			@ApiParam(value = "freelancer details", required = true) @RequestBody Freelancer freelancer)
+			@ApiParam(value = "freelancer details", required = true) @RequestBody FreelancerVO vo)
 			throws ServiceException {
-		Boolean changed = freelancerService.updateFreelancer(id, freelancer);
+		Freelancer model = new Freelancer();
+		model.setId(id);
+		model.setDetail(vo.getDetail());
+		model.setLanguagesKnown(vo.getLanguagesKnown());
+		model.setLocation(vo.getLocation());
+		model.setProfile(vo.getProfile());
+		model.setSocialLinks(vo.getSocialLinks());
+		Boolean changed = freelancerService.updateFreelancer(id, model);
 		SuccessVO success = new SuccessVO(String.valueOf(changed));
 		ResponseEntity<SuccessVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(success);
 		return response;
