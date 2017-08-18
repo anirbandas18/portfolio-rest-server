@@ -1,6 +1,8 @@
 package com.teenthofabud.portfolio.model.fields;
 
-public class SocialMedia {
+import java.util.Comparator;
+
+public class SocialMedia implements Comparable<SocialMedia>{
 	
 	private String link;
 	private String name;
@@ -15,6 +17,11 @@ public class SocialMedia {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	@Override
+	public int compareTo(SocialMedia o) {
+		// TODO Auto-generated method stub
+		return Comparator.comparing(SocialMedia::getName).compare(this, o);
 	}
 	
 	

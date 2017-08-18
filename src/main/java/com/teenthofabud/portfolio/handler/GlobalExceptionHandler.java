@@ -1,6 +1,8 @@
 package com.teenthofabud.portfolio.handler;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -9,29 +11,29 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.teenthofabud.portfolio.exception.ServiceException;
-import com.teenthofabud.portfolio.service.UtilityServices;
 import com.teenthofabud.portfolio.vo.ErrorVO;
 import com.teenthofabud.portfolio.vo.ExceptionVO;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 	
-	@Autowired
-	private UtilityServices utilityServices;
+	@Value("${exception.cause.placeholder}")
+	private String exceptionCausePlaceholder;
 	
 	@ExceptionHandler(value = ServiceException.class)
 	public ResponseEntity<?> handleControllerException(ServiceException e) {
-		String description = utilityServices.wrapServiceException(e);
-		ErrorVO body = new ErrorVO(e.getStatus().value(), description);
+		String message = e.getMessage();
+		message = message.replaceAll(exceptionCausePlaceholder, e.getReason());
+		ErrorVO body = new ErrorVO(e.getStatus().value(), message);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		ResponseEntity<ErrorVO> response = new ResponseEntity<>(body, headers, e.getStatus());
 		return response;
 	}
 	
-	@ExceptionHandler(value = Exception.class)
-	public ResponseEntity<?> handleOtherException(Exception e) {
-		ExceptionVO body = new ExceptionVO(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getCause().getClass().getName(), e.getMessage());
+	@ExceptionHandler(value = {IOException.class})
+	public ResponseEntity<?> handleSystemExceptions(Exception e) {
+		ExceptionVO body = new ExceptionVO(HttpStatus.INTERNAL_SERVER_ERROR.value(), e.getClass().getName(), e.getMessage());
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		ResponseEntity<ErrorVO> response = new ResponseEntity<>(body, headers, HttpStatus.INTERNAL_SERVER_ERROR);

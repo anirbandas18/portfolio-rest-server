@@ -1,78 +1,52 @@
 package com.teenthofabud.portfolio.model.collections;
 
+import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.model.fields.Location;
 import com.teenthofabud.portfolio.model.fields.Profile;
 import com.teenthofabud.portfolio.model.fields.SocialMedia;
 
 @Document
-public class Freelancer {
+public class Freelancer implements Comparable<Freelancer>{
 
 	@Id
-	@JsonIgnore
 	private String id;
-	private String firstName;
-	private String lastName;
-	private String photoURL;
-	private Location currentLocation;
-	private String emailId;
-	private String phoneNumber;
-	private List<String> languagesKnown;
-	private List<SocialMedia> socialLinks;
+	private String resumePath;
+	private String avatarPath;
+	private Detail detail;
 	private Profile profile;
-	
+	private Location location;
+	private List<SocialMedia> socialLinks;
+	private List<String> languagesKnown;
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public Detail getDetail() {
+		return detail;
+	}
+	public void setDetail(Detail detail) {
+		this.detail = detail;
+	}
 	public Profile getProfile() {
 		return profile;
 	}
 	public void setProfile(Profile profile) {
 		this.profile = profile;
 	}
-	public String getFirstName() {
-		return firstName;
+	public Location getLocation() {
+		return location;
 	}
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-	public String getLastName() {
-		return lastName;
-	}
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-	public String getPhotoURL() {
-		return photoURL;
-	}
-	public void setPhotoURL(String photoURL) {
-		this.photoURL = photoURL;
-	}
-	public Location getCurrentLocation() {
-		return currentLocation;
-	}
-	public void setCurrentLocation(Location currentLocation) {
-		this.currentLocation = currentLocation;
-	}
-	public String getEmailId() {
-		return emailId;
-	}
-	public void setEmailId(String emailId) {
-		this.emailId = emailId;
-	}
-	public String getPhoneNumber() {
-		return phoneNumber;
-	}
-	public void setPhoneNumber(String phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-	public List<String> getLanguagesKnown() {
-		return languagesKnown;
-	}
-	public void setLanguagesKnown(List<String> languagesKnown) {
-		this.languagesKnown = languagesKnown;
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 	public List<SocialMedia> getSocialLinks() {
 		return socialLinks;
@@ -80,11 +54,39 @@ public class Freelancer {
 	public void setSocialLinks(List<SocialMedia> socialLinks) {
 		this.socialLinks = socialLinks;
 	}
-	public String getId() {
-		return id;
+	public List<String> getLanguagesKnown() {
+		return languagesKnown;
 	}
-	public void setId(String id) {
-		this.id = id;
+	public void setLanguagesKnown(List<String> languagesKnown) {
+		this.languagesKnown = languagesKnown;
 	}
-
+	public String getResumePath() {
+		return resumePath;
+	}
+	public void setResumePath(String resumePath) {
+		this.resumePath = resumePath;
+	}
+	public String getAvatarPath() {
+		return avatarPath;
+	}
+	public void setAvatarPath(String avatarPath) {
+		this.avatarPath = avatarPath;
+	}
+	@Override
+	public int compareTo(Freelancer o) {
+		// TODO Auto-generated method stub
+		Integer i = Comparator.comparing(Freelancer::getId)
+				.thenComparing(Freelancer::getDetail)
+				.thenComparing(Freelancer::getLocation)
+				.thenComparing(Freelancer::getProfile)
+				.thenComparing(Freelancer::getResumePath)
+				.thenComparing(Freelancer::getAvatarPath)
+				.compare(this, o);
+		Integer j = this.getLanguagesKnown().equals(o.getLanguagesKnown()) ? 0 : 1;
+		Integer k = CollectionUtils.isEqualCollection(socialLinks, o.getSocialLinks()) ? 0 : 1;
+		Integer t = i.compareTo(j);
+		return t.compareTo(k);
+	}
+	
+	
 }

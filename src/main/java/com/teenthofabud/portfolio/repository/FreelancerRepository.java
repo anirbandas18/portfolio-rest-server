@@ -8,10 +8,10 @@ import com.teenthofabud.portfolio.model.collections.Freelancer;
 @Repository
 public interface FreelancerRepository extends MongoRepository<Freelancer, String> {
 	
-	public Freelancer findByEmailId(String emailId);
+	/*public Freelancer findByEmailId(String emailId);
 	
 	public Freelancer findByPhoneNumber(String phoneNumber);
 	
-	public Freelancer findByFirstNameAndLastName(String firstName, String lastName);
+	public Freelancer findByFirstNameAndLastName(String firstName, String lastName);*/
 
 }

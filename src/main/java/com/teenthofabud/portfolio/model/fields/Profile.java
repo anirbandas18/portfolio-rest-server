@@ -1,10 +1,12 @@
 package com.teenthofabud.portfolio.model.fields;
 
-public class Profile {
+import java.util.Comparator;
+
+public class Profile implements Comparable<Profile>{
 	
 	private String name;
 	private String overview;
-	private String link;
+	private String url;
 	public String getName() {
 		return name;
 	}
@@ -17,11 +19,19 @@ public class Profile {
 	public void setOverview(String overview) {
 		this.overview = overview;
 	}
-	public String getLink() {
-		return link;
+	public String getUrl() {
+		return url;
 	}
-	public void setLink(String link) {
-		this.link = link;
+	public void setUrl(String url) {
+		this.url = url;
+	}
+	@Override
+	public int compareTo(Profile o) {
+		// TODO Auto-generated method stub
+		return Comparator.comparing(Profile::getName)
+				.thenComparing(Profile::getOverview)
+				.thenComparing(Profile::getUrl)
+				.compare(this, o);
 	}
 	
 }
