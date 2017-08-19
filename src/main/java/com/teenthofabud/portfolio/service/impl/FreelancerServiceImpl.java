@@ -53,8 +53,9 @@ public class FreelancerServiceImpl implements FreelancerService {
 	public Boolean updateFreelancer(String id, Freelancer freelancer) throws ServiceException {
 		// TODO Auto-generated method stub
 		if (repository.exists(id)) {
+			Freelancer previous = repository.findOne(id);
 			Freelancer updated = repository.save(freelancer);
-			Integer or = freelancer.compareTo(updated);
+			Integer or = previous.compareTo(updated);
 			Boolean changed = or == 0 ? Boolean.FALSE : Boolean.TRUE;
 			return changed;
 		} else {

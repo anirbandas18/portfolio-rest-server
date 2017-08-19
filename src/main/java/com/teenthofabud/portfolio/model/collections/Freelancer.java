@@ -4,7 +4,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.teenthofabud.portfolio.model.fields.Detail;
@@ -18,6 +20,7 @@ public class Freelancer implements Comparable<Freelancer>{
 	@Id
 	private String id;
 	private String resumePath;
+	@Value("#root.avatarPath ?: 'avatar'")
 	private String avatarPath;
 	private Detail detail;
 	private Profile profile;
@@ -26,9 +29,6 @@ public class Freelancer implements Comparable<Freelancer>{
 	private List<String> languagesKnown;
 	public String getId() {
 		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
 	}
 	public Detail getDetail() {
 		return detail;
@@ -75,17 +75,54 @@ public class Freelancer implements Comparable<Freelancer>{
 	@Override
 	public int compareTo(Freelancer o) {
 		// TODO Auto-generated method stub
+		/*Boolean avatarComparison = Boolean.TRUE;
+		Boolean resumeComparison = Boolean.TRUE;	
+		try {
+			Path avatar1 = Paths.get(this.getAvatarPath());
+			Path avatar2 = Paths.get(o.getAvatarPath());
+			avatarComparison = FileUtils.contentEquals(avatar1.toFile(), avatar2.toFile());
+		} catch (IOException e) {
+			avatarComparison = Boolean.FALSE;
+		}
+		try {
+			Path resume1 = Paths.get(this.getResumePath());
+			Path resume2 = Paths.get(o.getResumePath());
+			resumeComparison = FileUtils.contentEquals(resume1.toFile(), resume2.toFile());	
+		} catch (IOException e) {
+			resumeComparison = Boolean.FALSE;
+		}
+		Integer a = avatarComparison ? 0 : 1;
+		Integer b = resumeComparison ? 0 : 1;
+		Integer c = a.compareTo(b);*/
 		Integer i = Comparator.comparing(Freelancer::getId)
 				.thenComparing(Freelancer::getDetail)
 				.thenComparing(Freelancer::getLocation)
 				.thenComparing(Freelancer::getProfile)
-				.thenComparing(Freelancer::getResumePath)
-				.thenComparing(Freelancer::getAvatarPath)
 				.compare(this, o);
 		Integer j = this.getLanguagesKnown().equals(o.getLanguagesKnown()) ? 0 : 1;
 		Integer k = CollectionUtils.isEqualCollection(socialLinks, o.getSocialLinks()) ? 0 : 1;
 		Integer t = i.compareTo(j);
-		return t.compareTo(k);
+		Integer x = t.compareTo(k);
+		return x;
+	}
+	public Freelancer() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+	@PersistenceConstructor
+	public Freelancer(@Value("#root.resumePath ?: 'hello'") String resumePath, @Value("#root.avatarPath ?: 'avatar'") String avatarPath, Detail detail, Profile profile,
+			Location location, List<SocialMedia> socialLinks, List<String> languagesKnown) {
+		super();
+		this.resumePath = resumePath;
+		this.avatarPath = avatarPath;
+		this.detail = detail;
+		this.profile = profile;
+		this.location = location;
+		this.socialLinks = socialLinks;
+		this.languagesKnown = languagesKnown;
+	}
+	public void setId(String id) {
+		this.id = id;
 	}
 	
 	
