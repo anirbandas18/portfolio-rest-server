@@ -35,10 +35,5 @@ public class ServiceException extends RuntimeException {
 		this.status = status;
 		this.reason = reason;
 	}
-	/*@Override
-	public synchronized Throwable fillInStackTrace() {
-		// TODO Auto-generated method stub
-		return this;
-	}*/
 	
 }

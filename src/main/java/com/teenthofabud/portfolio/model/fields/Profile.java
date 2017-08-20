@@ -2,10 +2,17 @@ package com.teenthofabud.portfolio.model.fields;
 
 import java.util.Comparator;
 
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.URL;
+
+
 public class Profile implements Comparable<Profile>{
 	
+	@Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "profile name should only contain alphanumeric characters and space")	
 	private String name;
 	private String overview;
+	@URL
 	private String url;
 	public String getName() {
 		return name;

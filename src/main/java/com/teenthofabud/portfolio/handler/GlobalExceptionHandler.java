@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.teenthofabud.portfolio.exception.ServiceException;
+import com.teenthofabud.portfolio.exception.ValidationException;
 import com.teenthofabud.portfolio.vo.ErrorVO;
 import com.teenthofabud.portfolio.vo.ExceptionVO;
+import com.teenthofabud.portfolio.vo.ValidationVO;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -37,6 +39,15 @@ public class GlobalExceptionHandler {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		ResponseEntity<ErrorVO> response = new ResponseEntity<>(body, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		return response;
+	}
+	
+	@ExceptionHandler(value = ValidationException.class)
+	public ResponseEntity<?> handleValidationException(ValidationException e) {
+		ValidationVO body = new ValidationVO(HttpStatus.BAD_REQUEST.value(), e.getMessage(), e.getErrors());
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, headers, HttpStatus.INTERNAL_SERVER_ERROR);
 		return response;
 	}
 	

@@ -6,7 +6,6 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.teenthofabud.portfolio.model.fields.Detail;
@@ -20,7 +19,6 @@ public class Freelancer implements Comparable<Freelancer>{
 	@Id
 	private String id;
 	private String resumePath;
-	@Value("#root.avatarPath ?: 'avatar'")
 	private String avatarPath;
 	private Detail detail;
 	private Profile profile;
@@ -63,13 +61,13 @@ public class Freelancer implements Comparable<Freelancer>{
 	public String getResumePath() {
 		return resumePath;
 	}
-	public void setResumePath(String resumePath) {
+	public void setResumePath(@Value("#root.resumePath ?: 'hello'") String resumePath) {
 		this.resumePath = resumePath;
 	}
 	public String getAvatarPath() {
 		return avatarPath;
 	}
-	public void setAvatarPath(String avatarPath) {
+	public void setAvatarPath(@Value("#root.avatarPath ?: 'avatar'") String avatarPath) {
 		this.avatarPath = avatarPath;
 	}
 	@Override
@@ -109,7 +107,7 @@ public class Freelancer implements Comparable<Freelancer>{
 		super();
 		// TODO Auto-generated constructor stub
 	}
-	@PersistenceConstructor
+	/*@PersistenceConstructor
 	public Freelancer(@Value("#root.resumePath ?: 'hello'") String resumePath, @Value("#root.avatarPath ?: 'avatar'") String avatarPath, Detail detail, Profile profile,
 			Location location, List<SocialMedia> socialLinks, List<String> languagesKnown) {
 		super();
@@ -120,7 +118,7 @@ public class Freelancer implements Comparable<Freelancer>{
 		this.location = location;
 		this.socialLinks = socialLinks;
 		this.languagesKnown = languagesKnown;
-	}
+	}*/
 	public void setId(String id) {
 		this.id = id;
 	}

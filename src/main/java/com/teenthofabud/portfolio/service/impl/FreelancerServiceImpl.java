@@ -104,7 +104,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	public Boolean importFile(FreelancerFileDTO dto) throws ServiceException {
 		// TODO Auto-generated method stub
 		if (repository.exists(dto.getId())) {
-			Path filePath = Paths.get(dto.getBaseFileLocation(), dto.getFile().getName());
+			Path filePath = Paths.get(dto.getBaseFileLocation(), dto.getId(), dto.getType().name().toLowerCase(), dto.getFile().getName());
 			try {
 				Path writtenPath = Files.write(filePath, dto.getFile().getBytes());
 				Freelancer freelancer = repository.findOne(dto.getId());
