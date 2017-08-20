@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Date;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
@@ -11,16 +12,20 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public class Detail implements Comparable<Detail> {
 
-	@NotEmpty(message = "first name can't be blank")
+	@NotEmpty(message = "first name can't be empty")
+	@NotBlank(message = "first name can't be blank")
 	@Pattern(regexp = "^[a-zA-Z]+$", message = "first name should only contain alphabets")
 	private String firstName;
-	@NotEmpty(message = "last name can't be blank")
+	@NotEmpty(message = "last name can't be empty")
+	@NotBlank(message = "last name can't be blank")
 	@Pattern(regexp = "^[a-zA-Z]+$", message = "last name should only contain alphabets")
 	private String lastName;
-	@NotEmpty(message = "email id can't be blank")
+	@NotEmpty(message = "email id can't be empty")
+	@NotBlank(message = "email id can't be blank")
 	@Email
 	private String emailId;
-	@NotEmpty(message = "phone number can't be blank")
+	@NotEmpty(message = "phone number can't be empty")
+	@NotBlank(message = "phone number can't be blank")
 	@Pattern(regexp = "^[0-9]{10}$", message = "phone number should only 10 contain digits")
 	private String phoneNumber;
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

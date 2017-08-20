@@ -5,12 +5,12 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonRootName(value = "error")
 public class ErrorVO {
 	
-	private Integer code;
+	private String code;
 	private String message;
-	public Integer getCode() {
+	public String getCode() {
 		return code;
 	}
-	public void setCode(Integer code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 	public String getMessage() {
@@ -19,7 +19,7 @@ public class ErrorVO {
 	public void setMessage(String message) {
 		this.message = message;
 	}
-	public ErrorVO(Integer code, String message) {
+	public ErrorVO(String code, String message) {
 		super();
 		this.code = code;
 		this.message = message;

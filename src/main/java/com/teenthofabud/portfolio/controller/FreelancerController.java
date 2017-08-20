@@ -1,8 +1,6 @@
 package com.teenthofabud.portfolio.controller;
 
 import java.io.IOException;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -13,7 +11,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.teenthofabud.portfolio.configuration.constants.FreelancerFile;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.exception.ServiceException;
-import com.teenthofabud.portfolio.exception.ValidationException;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
@@ -80,26 +76,20 @@ public class FreelancerController {
 			notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation")
 	@PostMapping
 	public ResponseEntity<SuccessVO> postFreelancerDetails(
-			@ApiParam(value = "freelancer details", required = true) @RequestBody @Valid FreelancerVO vo,
-			BindingResult result)
-			throws ServiceException, ValidationException {
-		if(result.hasErrors()) {
-			List<String> errors = result.getAllErrors().stream().map(e -> e.getDefaultMessage()).collect(Collectors.toList());
-			throw new ValidationException(errors);
-		} else {
-			Freelancer model = new Freelancer();
-			model.setDetail(vo.getDetail());
-			model.setLanguagesKnown(vo.getLanguagesKnown());
-			model.setLocation(vo.getLocation());
-			model.setProfile(vo.getProfile());
-			model.setSocialLinks(vo.getSocialLinks());
-			String id = freelancerService.createFreelancer(model);
-			SuccessVO success = new SuccessVO(id);
-			ResponseEntity<SuccessVO> response = ResponseEntity.ok()
-					.contentType(MediaType.APPLICATION_JSON)
-					.body(success);
-			return response;
-		}
+			@Valid @ApiParam(value = "freelancer details", required = true) @RequestBody FreelancerVO vo)
+			throws ServiceException {
+		Freelancer model = new Freelancer();
+		model.setDetail(vo.getDetail());
+		model.setLanguagesKnown(vo.getLanguagesKnown());
+		model.setLocation(vo.getLocation());
+		model.setProfile(vo.getProfile());
+		model.setSocialLinks(vo.getSocialLinks());
+		String id = freelancerService.createFreelancer(model);
+		SuccessVO success = new SuccessVO(id);
+		ResponseEntity<SuccessVO> response = ResponseEntity.ok()
+				.contentType(MediaType.APPLICATION_JSON)
+				.body(success);
+		return response;
 	}
 
 	@ApiOperation(value = "update freelancer details", response = Freelancer.class, produces = "application/json", 

@@ -4,7 +4,7 @@ public class ExceptionVO extends ErrorVO {
 	
 	private String cause;
 
-	public ExceptionVO(Integer code, String cause, String message) {
+	public ExceptionVO(String code, String cause, String message) {
 		super(code, message);
 		this.cause = cause;
 	}

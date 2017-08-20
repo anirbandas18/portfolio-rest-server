@@ -2,6 +2,7 @@ package com.teenthofabud.portfolio.model.fields;
 
 import java.util.Comparator;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
@@ -9,12 +10,15 @@ import javax.validation.constraints.Pattern;
 public class Location implements Comparable<Location> {
 
 	@NotEmpty(message = "city can't be blank")
+	@NotBlank(message = "city can't be blank")
 	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "city should only contain alphabets and space")
 	private String city;
 	@NotEmpty(message = "state can't be blank")
+	@NotBlank(message = "state can't be blank")
 	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "state should only contain alphabets and space")
 	private String state;
 	@NotEmpty(message = "country can't be blank")
+	@NotBlank(message = "country can't be blank")
 	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "country should only contain alphabets and space")
 	private String country;
 	public String getState() {
