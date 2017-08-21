@@ -4,11 +4,8 @@ import java.util.Comparator;
 
 import javax.validation.constraints.Pattern;
 
-import org.hibernate.validator.constraints.URL;
-
 public class SocialMedia implements Comparable<SocialMedia>{
 	
-	@URL
 	private String link;
 	@Pattern(regexp = "^[a-zA-Z0-9\\+]+$", message = "social media platform name should only contain alphanumeric characters along with +")
 	private String name;

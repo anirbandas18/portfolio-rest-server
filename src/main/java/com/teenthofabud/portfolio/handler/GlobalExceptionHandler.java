@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
 	}
 	
 	@ExceptionHandler(value = MethodArgumentNotValidException.class)
-	public ResponseEntity<?> handleInvalidArgumentException(MethodArgumentNotValidException e) {
+	public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException e) {
 		BindingResult bindingResult = e.getBindingResult();
 		List<ErrorVO> errors = bindingResult.getAllErrors().stream()
 				.map(x -> new ErrorVO(x.getObjectName(), x.getDefaultMessage())).collect(Collectors.toList());

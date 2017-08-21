@@ -2,6 +2,8 @@ package com.teenthofabud.portfolio.vo;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.model.fields.Location;
@@ -11,9 +13,13 @@ import com.teenthofabud.portfolio.model.fields.SocialMedia;
 @JsonRootName(value = "freelancer")
 public class FreelancerVO {
 	
+	@Valid
 	private Detail detail;
+	@Valid
 	private Profile profile;
+	@Valid
 	private Location location;
+	@Valid
 	private List<SocialMedia> socialLinks;
 	private List<String> languagesKnown;
 	

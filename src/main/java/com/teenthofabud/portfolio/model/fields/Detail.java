@@ -3,11 +3,10 @@ package com.teenthofabud.portfolio.model.fields;
 import java.util.Comparator;
 import java.util.Date;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.format.annotation.DateTimeFormat;
 
 public class Detail implements Comparable<Detail> {
@@ -22,11 +21,12 @@ public class Detail implements Comparable<Detail> {
 	private String lastName;
 	@NotEmpty(message = "email id can't be empty")
 	@NotBlank(message = "email id can't be blank")
-	@Email
+	// @Email(regexp = "^[\\\\w-\\\\+]+(\\\\.[\\\\w]+)*@[\\\\w-]+(\\\\.[\\\\w]+)*(\\\\.[a-z]{2,})$")
+	// validate by sending email
 	private String emailId;
 	@NotEmpty(message = "phone number can't be empty")
 	@NotBlank(message = "phone number can't be blank")
-	@Pattern(regexp = "^[0-9]{10}$", message = "phone number should only 10 contain digits")
+	@Pattern(regexp = "((\\+*)((0[ -]+)*|(91 )*)(\\d{12}+|\\d{10}+))|\\d{5}([- ]*)\\d{6}", message = "phone number should only 10 contain digits")
 	private String phoneNumber;
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date dateOfBirth;

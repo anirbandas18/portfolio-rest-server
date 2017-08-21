@@ -2,9 +2,10 @@ package com.teenthofabud.portfolio.model.fields;
 
 import java.util.Comparator;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
 
 public class Location implements Comparable<Location> {

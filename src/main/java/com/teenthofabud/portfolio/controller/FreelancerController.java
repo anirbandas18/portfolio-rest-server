@@ -37,32 +37,30 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 @RequestMapping("/freelancer")
-@Api(consumes = "application/json", produces = "application/json", protocols = "http", description = "REST to CRUD operation mapping on freelancer properties and File READ/WRITE for freelancer avatar and resume files", tags = { "Freelancer" })
+@Api(consumes = "application/json", produces = "application/json", protocols = "http", description = "REST to CRUD operation mapping on freelancer properties and File READ/WRITE for freelancer avatar and resume files", tags = {
+		"Freelancer" })
 public class FreelancerController {
 
 	@Autowired
 	private FreelancerService freelancerService;
-	
+
 	@Value("${resume.base.location}")
 	private String resumeBaseLocation;
-	
+
 	@Value("${avatar.base.location}")
 	private String avatarBaseLocation;
 
-	@ApiOperation(value = "read freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Read details of freelancer from database as identified by its ID and expose it")
+	@ApiOperation(value = "read freelancer details", response = Freelancer.class, produces = "application/json", notes = "Read details of freelancer from database as identified by its ID and expose it")
 	@GetMapping("/{id}")
 	public ResponseEntity<Freelancer> getFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException {
 		Freelancer freelancer = freelancerService.readFreelancer(id);
-		ResponseEntity<Freelancer> response = ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
+		ResponseEntity<Freelancer> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
 				.body(freelancer);
 		return response;
 	}
 
-	@ApiOperation(value = "delete freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Delete details of freelancer from database as identified by its ID and return the operation status")
+	@ApiOperation(value = "delete freelancer details", response = Freelancer.class, produces = "application/json", notes = "Delete details of freelancer from database as identified by its ID and return the operation status")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<SuccessVO> deleteFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException {
@@ -71,12 +69,11 @@ public class FreelancerController {
 		ResponseEntity<SuccessVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(success);
 		return response;
 	}
-	
-	@ApiOperation(value = "create freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation")
+
+	@ApiOperation(value = "create freelancer details", response = Freelancer.class, produces = "application/json", notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation")
 	@PostMapping
-	public ResponseEntity<SuccessVO> postFreelancerDetails(
-			@Valid @ApiParam(value = "freelancer details", required = true) @RequestBody FreelancerVO vo)
+	public ResponseEntity<?> postFreelancerDetails(
+			@ApiParam(value = "freelancer details", required = true) @Valid @RequestBody FreelancerVO vo)
 			throws ServiceException {
 		Freelancer model = new Freelancer();
 		model.setDetail(vo.getDetail());
@@ -86,14 +83,11 @@ public class FreelancerController {
 		model.setSocialLinks(vo.getSocialLinks());
 		String id = freelancerService.createFreelancer(model);
 		SuccessVO success = new SuccessVO(id);
-		ResponseEntity<SuccessVO> response = ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(success);
+		ResponseEntity<SuccessVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(success);
 		return response;
 	}
 
-	@ApiOperation(value = "update freelancer details", response = Freelancer.class, produces = "application/json", 
-			notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body")
+	@ApiOperation(value = "update freelancer details", response = Freelancer.class, produces = "application/json", notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body")
 	@PutMapping("/{id}")
 	public ResponseEntity<SuccessVO> putFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id,
@@ -111,14 +105,12 @@ public class FreelancerController {
 		ResponseEntity<SuccessVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(success);
 		return response;
 	}
-	
-	@ApiOperation(value = "upload freelancer's resume file", response = ResumeVO.class, produces = "application/json", 
-			notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
+
+	@ApiOperation(value = "upload freelancer's resume file", response = ResumeVO.class, produces = "application/json", notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/resume/{id}")
 	public ResponseEntity<SuccessVO> uploadResume(
-			@ApiParam(value = "freelancer's resume file", required = true) @RequestParam MultipartFile resume, 
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
-			throws ServiceException {
+			@ApiParam(value = "freelancer's resume file", required = true) @RequestParam MultipartFile resume,
+			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
 		dto.setBaseFileLocation(resumeBaseLocation);
 		dto.setId(id);
@@ -126,17 +118,15 @@ public class FreelancerController {
 		dto.setType(FreelancerFile.RESUME);
 		Boolean status = freelancerService.importFile(dto);
 		SuccessVO success = new SuccessVO(String.valueOf(status));
-		ResponseEntity<SuccessVO> response = ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(success);
+		ResponseEntity<SuccessVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(success);
 		return response;
 	}
-	
-	@ApiOperation(value = "download freelancer's resume file", response = ByteArrayResource.class, 
-			notes = "Download resume file of freelancer as identified by its respective ID from the file system")
+
+	@ApiOperation(value = "download freelancer's resume file", response = ByteArrayResource.class, notes = "Download resume file of freelancer as identified by its respective ID from the file system")
 	@GetMapping("/resume/{id}")
 	public ResponseEntity<Resource> downloadResume(
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException, IOException {
+			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
+			throws ServiceException, IOException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
 		dto.setId(id);
 		dto.setType(FreelancerFile.RESUME);
@@ -146,19 +136,15 @@ public class FreelancerController {
 		headers.setContentLength(dto.getFile().getSize());
 		headers.setContentType(MediaType.valueOf(dto.getFile().getContentType()));
 		Resource resource = new ByteArrayResource(dto.getFile().getBytes());
-		ResponseEntity<Resource> response = ResponseEntity.ok()
-				.headers(headers)
-				.body(resource);
+		ResponseEntity<Resource> response = ResponseEntity.ok().headers(headers).body(resource);
 		return response;
 	}
-	
-	@ApiOperation(value = "upload freelancer's avatar file", response = ResumeVO.class, produces = "application/json", 
-			notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
+
+	@ApiOperation(value = "upload freelancer's avatar file", response = ResumeVO.class, produces = "application/json", notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/avatar/{id}")
 	public ResponseEntity<SuccessVO> uploadAvatar(
-			@ApiParam(value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar, 
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
-			throws ServiceException {
+			@ApiParam(value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar,
+			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
 		dto.setBaseFileLocation(avatarBaseLocation);
 		dto.setId(id);
@@ -166,17 +152,15 @@ public class FreelancerController {
 		dto.setType(FreelancerFile.AVATAR);
 		Boolean status = freelancerService.importFile(dto);
 		SuccessVO success = new SuccessVO(String.valueOf(status));
-		ResponseEntity<SuccessVO> response = ResponseEntity.ok()
-				.contentType(MediaType.APPLICATION_JSON)
-				.body(success);
+		ResponseEntity<SuccessVO> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(success);
 		return response;
 	}
-	
-	@ApiOperation(value = "download freelancer's avatar file", response = ByteArrayResource.class, 
-			notes = "Download avatar file of freelancer as identified by its respective ID from the file system")
+
+	@ApiOperation(value = "download freelancer's avatar file", response = ByteArrayResource.class, notes = "Download avatar file of freelancer as identified by its respective ID from the file system")
 	@GetMapping("/avatar/{id}")
 	public ResponseEntity<Resource> downloadAvatar(
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) throws ServiceException, IOException {
+			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
+			throws ServiceException, IOException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
 		dto.setId(id);
 		dto.setType(FreelancerFile.AVATAR);
@@ -186,10 +170,8 @@ public class FreelancerController {
 		headers.setContentLength(dto.getFile().getSize());
 		headers.setContentType(MediaType.valueOf(dto.getFile().getContentType()));
 		Resource resource = new ByteArrayResource(dto.getFile().getBytes());
-		ResponseEntity<Resource> response = ResponseEntity.ok()
-				.headers(headers)
-				.body(resource);
+		ResponseEntity<Resource> response = ResponseEntity.ok().headers(headers).body(resource);
 		return response;
 	}
-	
+
 }

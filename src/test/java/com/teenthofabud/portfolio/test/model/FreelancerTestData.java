@@ -8,7 +8,7 @@ import org.springframework.context.annotation.PropertySource;
 import com.teenthofabud.portfolio.model.fields.Location;
 
 @Configuration
-@PropertySource("classpath:freelancer-test-data.properties")
+@PropertySource("freelancer-test-data.properties")
 @EnableConfigurationProperties
 @ConfigurationProperties(prefix = "freelancer")
 
