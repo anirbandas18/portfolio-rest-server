@@ -25,6 +25,9 @@ public class GlobalExceptionHandler {
 	@Value("${exception.cause.placeholder}")
 	private String exceptionCausePlaceholder;
 	
+	@Value("${validation.error.template}")
+	private String validationErrorTemplate;
+	
 	@ExceptionHandler(value = ServiceException.class)
 	public ResponseEntity<?> handleControllerException(ServiceException e) {
 		String message = e.getMessage();
@@ -48,12 +51,13 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(value = MethodArgumentNotValidException.class)
 	public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException e) {
 		BindingResult bindingResult = e.getBindingResult();
-		List<ErrorVO> errors = bindingResult.getAllErrors().stream()
-				.map(x -> new ErrorVO(x.getObjectName(), x.getDefaultMessage())).collect(Collectors.toList());
-		ValidationVO body = new ValidationVO(HttpStatus.BAD_REQUEST.name(), e.getMessage(), errors);
+		List<ErrorVO> errors = bindingResult.getFieldErrors().stream()
+				.map(x -> new ErrorVO(x.getField(), x.getDefaultMessage())).collect(Collectors.toList());
+		String message = validationErrorTemplate.replace(exceptionCausePlaceholder, bindingResult.getObjectName());
+		ValidationVO body = new ValidationVO(HttpStatus.BAD_REQUEST.name(), message, errors);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, headers, HttpStatus.INTERNAL_SERVER_ERROR);
+		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
 		return response;
 	}
 	
