@@ -13,6 +13,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MultipartException;
 
 import com.teenthofabud.portfolio.exception.ServiceException;
 import com.teenthofabud.portfolio.vo.ErrorVO;
@@ -58,6 +59,15 @@ public class GlobalExceptionHandler {
 		HttpHeaders headers = new HttpHeaders();
 		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
+		return response;
+	}
+	
+	@ExceptionHandler(value = MultipartException.class)
+	public ResponseEntity<?> handleMultipartFileException(MultipartException e) {
+		ExceptionVO body = new ExceptionVO(HttpStatus.BAD_REQUEST.name(), e.getClass().getName(), e.getMessage());
+		HttpHeaders headers = new HttpHeaders();
+		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		ResponseEntity<ErrorVO> response = new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
 		return response;
 	}
 	

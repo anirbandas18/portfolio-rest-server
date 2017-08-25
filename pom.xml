@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.teenthofabud.portfolio</groupId>
 	<artifactId>portfolio-rest-server</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.4-SNAPSHOT</version>
 
 	<name>portfolio-engine</name>
 	<url>http://13.58.63.186:6002/</url>
@@ -110,6 +110,7 @@
 	</build>
 	<description>backend engine exposing portfolio web serivces via RESTful APIs</description>
 	<scm>
-		<connection>https://github.com/anirbandas18/portfolio-rest-server.git</connection>
+		<developerConnection>anirbandas18</developerConnection>
+		<url>https://github.com/anirbandas18/portfolio-rest-server.git</url>
 	</scm>
 </project>

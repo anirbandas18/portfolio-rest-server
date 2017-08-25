@@ -91,7 +91,7 @@ public class FreelancerController {
 	@PutMapping("/{id}")
 	public ResponseEntity<SuccessVO> putFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id,
-			@ApiParam(value = "freelancer details", required = true) @RequestBody FreelancerVO vo)
+			@ApiParam(value = "freelancer details", required = true) @Valid @RequestBody FreelancerVO vo)
 			throws ServiceException {
 		Freelancer model = new Freelancer();
 		model.setId(id);
