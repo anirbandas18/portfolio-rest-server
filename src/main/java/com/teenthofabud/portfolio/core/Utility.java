@@ -19,4 +19,9 @@ public class Utility {
 		return parameters;
 	}
 
+	public Object map2POJO(Map<String,Object> map, Class<?> clazz) {
+		Object pojo = mapper.convertValue(map, clazz);
+		return pojo;
+	}
+	
 }

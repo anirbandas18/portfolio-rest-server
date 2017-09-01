@@ -2,14 +2,15 @@ package com.teenthofabud.portfolio.vo;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonRootName;
 
 @JsonRootName(value = "search")
+@JsonInclude(value = Include.NON_EMPTY)
 public class SearchVO {
 
 	private Map<String,Object> parameters;
-	private Integer sort;
-	private String domain;
 
 	public Map<String, Object> getParameters() {
 		return parameters;
@@ -19,20 +20,4 @@ public class SearchVO {
 		this.parameters = parameters;
 	}
 
-	public Integer getSort() {
-		return sort;
-	}
-
-	public void setSort(Integer sort) {
-		this.sort = sort;
-	}
-
-	public String getDomain() {
-		return domain;
-	}
-
-	public void setDomain(String domain) {
-		this.domain = domain;
-	}
-	
 }

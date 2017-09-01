@@ -1,6 +1,8 @@
 package com.teenthofabud.portfolio.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -10,10 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,12 +31,16 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.teenthofabud.portfolio.core.Utility;
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
+import com.teenthofabud.portfolio.core.constants.SortOrder;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
+import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.vo.ApiResponse;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
+import com.teenthofabud.portfolio.vo.SearchVO;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -48,14 +56,65 @@ public class FreelancerController {
 
 	@Autowired
 	private FreelancerService freelancerService;
-
+	@Autowired
+	private Utility util;
+	@Autowired
+	private Sort asc;
+	@Autowired
+	private Sort desc;
 	@Value("${resume.base.location}")
 	private String resumeBaseLocation;
-
 	@Value("${avatar.base.location}")
 	private String avatarBaseLocation;
 
-	@ApiOperation(value = "read freelancer details", response = Freelancer.class, produces = "application/json", notes = "Read details of freelancer from database as identified by its ID and expose it")
+	@ApiOperation(value = "read signle freelancer details matching criteria", response = Freelancer.class, produces = "application/json", consumes = "application/json", notes = "Read details of freelancer from database as identified by values of it's properties and expose it")
+	@GetMapping("/search/single")
+	public ResponseEntity<Freelancer> getSingleFreelancer(
+			@ApiParam(value = "freelancer search criterias", required = true) @Valid @RequestBody SearchVO criteria)
+					throws HttpStatusCodeException{
+		Detail freelancerDetails = (Detail) util.map2POJO(criteria.getParameters(), Detail.class);
+		Freelancer freelancer = freelancerService.read(freelancerDetails);
+		ResponseEntity<Freelancer> response = ResponseEntity.ok().body(freelancer);
+		return response;
+	}
+	
+	@ApiOperation(value = "read multiple freelancer details matching criteria", responseContainer = "List", response = Freelancer.class, produces = "application/json", consumes = "application/json", notes = "Read all freelancers from database as identified by values of properties and expose it")
+	@GetMapping("/search/multiple/{order}")
+	public ResponseEntity<?> getMultipleFreelancers(
+			@ApiParam(value = "freelancer search criterias", required = true) @Valid @RequestBody SearchVO criteria,
+			@ApiParam(value = "search result order", required = false) @PathVariable String sortOrder)
+					throws HttpStatusCodeException{
+		Detail freelancerDetails = (Detail) util.map2POJO(criteria.getParameters(), Detail.class);
+		List<Sort> order = new ArrayList<>();
+		if(StringUtils.hasText(sortOrder)) {
+			SortOrder x = SortOrder.valueOf(sortOrder);
+			order.add(x == SortOrder.ASC ? asc : desc);
+		} else {
+			order.add(asc);
+		}
+		List<Freelancer> matchingFreelancers = freelancerService.readAll(freelancerDetails, order.toArray(new Sort[1]));
+		ResponseEntity<?> response = ResponseEntity.ok().body(matchingFreelancers);
+		return response;
+	}
+	
+	@ApiOperation(value = "read all freelancer details", responseContainer = "List", response = Freelancer.class, produces = "application/json", consumes = "application/json", notes = "Read all freelancers from database and expose it")
+	@GetMapping("/all/{order}")
+	public ResponseEntity<List<Freelancer>> getAllFreelancers(
+			@ApiParam(value = "search result order", required = false) @PathVariable String sortOrder)
+					throws HttpStatusCodeException{
+		List<Sort> order = new ArrayList<>();
+		if(StringUtils.hasText(sortOrder)) {
+			SortOrder x = SortOrder.valueOf(sortOrder);
+			order.add(x == SortOrder.ASC ? asc : desc);
+		} else {
+			order.add(asc);
+		}
+		List<Freelancer> matchingFreelancers = freelancerService.readAll(order.toArray(new Sort[1]));
+		ResponseEntity<List<Freelancer>> response = ResponseEntity.ok().body(matchingFreelancers);
+		return response;
+	}
+	
+	@ApiOperation(value = "read freelancer details", response = Freelancer.class, produces = "application/json", consumes = "application/json", notes = "Read details of freelancer from database as identified by its ID and expose it")
 	@GetMapping("/{id}")
 	public ResponseEntity<Freelancer> getFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
@@ -66,7 +125,7 @@ public class FreelancerController {
 		return response;
 	}
 
-	@ApiOperation(value = "delete freelancer details", response = ApiResponse.class, produces = "application/json", notes = "Delete details of freelancer from database as identified by its ID and return the operation status")
+	@ApiOperation(value = "delete freelancer details", response = ApiResponse.class, produces = "application/json", consumes = "application/json", notes = "Delete details of freelancer from database as identified by its ID and return the operation status")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse> deleteFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) 
@@ -82,7 +141,7 @@ public class FreelancerController {
 		return response;
 	}
 
-	@ApiOperation(value = "create freelancer details", response = ApiResponse.class, produces = "application/json", notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation")
+	@ApiOperation(value = "create freelancer details", response = ApiResponse.class, produces = "application/json", consumes = "application/json", notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation")
 	@PostMapping
 	public ResponseEntity<ApiResponse> postFreelancerDetails(
 			@ApiParam(value = "freelancer details", required = true) @Valid @RequestBody FreelancerVO vo)
@@ -104,7 +163,7 @@ public class FreelancerController {
 		return response;
 	}
 
-	@ApiOperation(value = "update freelancer details", response = ApiResponse.class, produces = "application/json", notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body")
+	@ApiOperation(value = "update freelancer details", response = ApiResponse.class, produces = "application/json", consumes = "application/json", notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body")
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse> putFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id,
@@ -128,7 +187,7 @@ public class FreelancerController {
 		return response;
 	}
 
-	@ApiOperation(value = "upload freelancer's resume file", response = ApiResponse.class, produces = "application/json", notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
+	@ApiOperation(value = "upload freelancer's resume file", response = ApiResponse.class, produces = "application/json", consumes = "application/json", notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/resume/{id}")
 	public ResponseEntity<ApiResponse> uploadResume(
 			@ApiParam(value = "freelancer's resume file", required = true) @RequestParam MultipartFile resume,
@@ -179,7 +238,7 @@ public class FreelancerController {
 		}
 	}
 
-	@ApiOperation(value = "upload freelancer's avatar file", response = ApiResponse.class, produces = "application/json", notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
+	@ApiOperation(value = "upload freelancer's avatar file", response = ApiResponse.class, produces = "application/json", consumes = "application/json", notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/avatar/{id}")
 	public ResponseEntity<ApiResponse> uploadAvatar(
 			@ApiParam(value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar,

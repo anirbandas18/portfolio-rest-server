@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.handler;
+package com.teenthofabud.portfolio.core.handler;
 
 import java.io.IOException;
 
