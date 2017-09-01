@@ -2,19 +2,17 @@ package com.teenthofabud.portfolio.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonRootName;
 
-@JsonRootName(value = "response")
 @JsonInclude(value = Include.NON_EMPTY)
-public class ResponseVO {
+public class ApiResponse {
 	
-	public ResponseVO(String code, String message) {
+	public ApiResponse(String status, String message) {
 		super();
-		this.code = code;
+		this.status = status;
 		this.message = message;
 	}
 
-	private String code;
+	private String status;
 	private String message;
 
 	public String getMessage() {
@@ -25,22 +23,22 @@ public class ResponseVO {
 		this.message = message;
 	}
 
-	public ResponseVO(String message) {
+	public ApiResponse(String message) {
 		super();
 		this.message = message;
 	}
 
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public ResponseVO() {
+	public ApiResponse() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 	
 }

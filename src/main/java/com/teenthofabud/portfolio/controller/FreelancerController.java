@@ -31,8 +31,8 @@ import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.service.FreelancerService;
+import com.teenthofabud.portfolio.vo.ApiResponse;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
-import com.teenthofabud.portfolio.vo.ResponseVO;
 import com.teenthofabud.portfolio.vo.ResumeVO;
 
 import io.swagger.annotations.Api;
@@ -69,21 +69,23 @@ public class FreelancerController {
 
 	@ApiOperation(value = "delete freelancer details", response = Freelancer.class, produces = "application/json", notes = "Delete details of freelancer from database as identified by its ID and return the operation status")
 	@DeleteMapping("/{id}")
-	public ResponseEntity<ResponseVO> deleteFreelancerDetails(
+	public ResponseEntity<ApiResponse> deleteFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) 
 					throws HttpStatusCodeException {
 		Boolean changed = freelancerService.delete(id);
-		HttpHeaders headers = new HttpHeaders();
+		/*HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setDate(System.currentTimeMillis());
-		ResponseVO body = new ResponseVO(String.valueOf(changed));
-		ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, headers, HttpStatus.IM_USED);
+		headers.setDate(System.currentTimeMillis());*/
+		ApiResponse body = new ApiResponse();
+		body.setStatus("deleted");
+		body.setMessage(String.valueOf(changed));
+		ResponseEntity<ApiResponse> response = new ResponseEntity<>(body, HttpStatus.IM_USED);
 		return response;
 	}
 
 	@ApiOperation(value = "create freelancer details", response = Freelancer.class, produces = "application/json", notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation")
 	@PostMapping
-	public ResponseEntity<ResponseVO> postFreelancerDetails(
+	public ResponseEntity<ApiResponse> postFreelancerDetails(
 			@ApiParam(value = "freelancer details", required = true) @Valid @RequestBody FreelancerVO vo)
 			throws HttpStatusCodeException {
 		Freelancer model = new Freelancer();
@@ -93,17 +95,19 @@ public class FreelancerController {
 		model.setProfile(vo.getProfile());
 		model.setSocialLinks(vo.getSocialLinks());
 		String id = freelancerService.create(model);
-		ResponseVO success = new ResponseVO(id);
-		HttpHeaders headers = new HttpHeaders();
+		ApiResponse success = new ApiResponse();
+		success.setStatus("id");
+		success.setMessage(id);
+		/*HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setDate(System.currentTimeMillis());
-		ResponseEntity<ResponseVO> response = new ResponseEntity<>(success, headers, HttpStatus.CREATED);
+		headers.setDate(System.currentTimeMillis());*/
+		ResponseEntity<ApiResponse> response = new ResponseEntity<>(success, HttpStatus.CREATED);
 		return response;
 	}
 
 	@ApiOperation(value = "update freelancer details", response = Freelancer.class, produces = "application/json", notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body")
 	@PutMapping("/{id}")
-	public ResponseEntity<ResponseVO> putFreelancerDetails(
+	public ResponseEntity<ApiResponse> putFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id,
 			@ApiParam(value = "freelancer details", required = true) @Valid @RequestBody FreelancerVO vo)
 			throws HttpStatusCodeException {
@@ -115,17 +119,19 @@ public class FreelancerController {
 		model.setProfile(vo.getProfile());
 		model.setSocialLinks(vo.getSocialLinks());
 		Boolean changed = freelancerService.update(id, model);
-		ResponseVO body = new ResponseVO(String.valueOf(changed));
-		HttpHeaders headers = new HttpHeaders();
+		ApiResponse body = new ApiResponse();
+		body.setStatus("updated");
+		body.setMessage(String.valueOf(changed));
+		/*HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
-		headers.setDate(System.currentTimeMillis());
-		ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, headers, HttpStatus.IM_USED);
+		headers.setDate(System.currentTimeMillis());*/
+		ResponseEntity<ApiResponse> response = new ResponseEntity<>(body, HttpStatus.IM_USED);
 		return response;
 	}
 
 	@ApiOperation(value = "upload freelancer's resume file", response = ResumeVO.class, produces = "application/json", notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/resume/{id}")
-	public ResponseEntity<ResponseVO> uploadResume(
+	public ResponseEntity<ApiResponse> uploadResume(
 			@ApiParam(value = "freelancer's resume file", required = true) @RequestParam MultipartFile resume,
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) 
 					throws HttpStatusCodeException {
@@ -136,11 +142,13 @@ public class FreelancerController {
 		dto.setType(FreelancerFile.RESUME);
 		try {
 			Boolean status = freelancerService.importFile(dto);
-			ResponseVO body = new ResponseVO(String.valueOf(status));
-			HttpHeaders headers = new HttpHeaders();
+			ApiResponse body = new ApiResponse();
+			body.setStatus("uploaded");
+			body.setMessage(String.valueOf(status));
+			/*HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.setDate(System.currentTimeMillis());
-			ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, headers, HttpStatus.IM_USED);
+			headers.setDate(System.currentTimeMillis());*/
+			ResponseEntity<ApiResponse> response = new ResponseEntity<>(body, HttpStatus.IM_USED);
 			return response;
 		} catch (IOException e) {
 			LOG.error(e.getMessage());
@@ -174,7 +182,7 @@ public class FreelancerController {
 
 	@ApiOperation(value = "upload freelancer's avatar file", response = ResumeVO.class, produces = "application/json", notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/avatar/{id}")
-	public ResponseEntity<ResponseVO> uploadAvatar(
+	public ResponseEntity<ApiResponse> uploadAvatar(
 			@ApiParam(value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar,
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) 
 					throws HttpStatusCodeException {
@@ -185,11 +193,13 @@ public class FreelancerController {
 		dto.setType(FreelancerFile.AVATAR);
 		try {
 			Boolean status = freelancerService.importFile(dto);
-			ResponseVO body = new ResponseVO(String.valueOf(status));
-			HttpHeaders headers = new HttpHeaders();
+			ApiResponse body = new ApiResponse();
+			body.setStatus("updated");
+			body.setMessage(String.valueOf(status));
+			/*HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_JSON);
-			headers.setDate(System.currentTimeMillis());
-			ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, headers, HttpStatus.IM_USED);
+			headers.setDate(System.currentTimeMillis());*/
+			ResponseEntity<ApiResponse> response = new ResponseEntity<>(body, HttpStatus.IM_USED);
 			return response;
 		} catch (IOException e) {
 			LOG.error(e.getMessage());
