@@ -33,7 +33,6 @@ import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.vo.ApiResponse;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
-import com.teenthofabud.portfolio.vo.ResumeVO;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,7 +40,7 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 @RequestMapping("/freelancer")
-@Api(consumes = "application/json", produces = "application/json", protocols = "http", description = "REST to CRUD operation mapping on freelancer properties and File READ/WRITE for freelancer avatar and resume files", tags = {
+@Api(consumes = "application/json", produces = "application/json", protocols = "http", description = "REST to CRUD operation mapping on freelancer properties and read/write for freelancer avatar and resume files", tags = {
 		"Freelancer" })
 public class FreelancerController {
 	
@@ -67,7 +66,7 @@ public class FreelancerController {
 		return response;
 	}
 
-	@ApiOperation(value = "delete freelancer details", response = Freelancer.class, produces = "application/json", notes = "Delete details of freelancer from database as identified by its ID and return the operation status")
+	@ApiOperation(value = "delete freelancer details", response = ApiResponse.class, produces = "application/json", notes = "Delete details of freelancer from database as identified by its ID and return the operation status")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse> deleteFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id) 
@@ -83,7 +82,7 @@ public class FreelancerController {
 		return response;
 	}
 
-	@ApiOperation(value = "create freelancer details", response = Freelancer.class, produces = "application/json", notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation")
+	@ApiOperation(value = "create freelancer details", response = ApiResponse.class, produces = "application/json", notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation")
 	@PostMapping
 	public ResponseEntity<ApiResponse> postFreelancerDetails(
 			@ApiParam(value = "freelancer details", required = true) @Valid @RequestBody FreelancerVO vo)
@@ -105,7 +104,7 @@ public class FreelancerController {
 		return response;
 	}
 
-	@ApiOperation(value = "update freelancer details", response = Freelancer.class, produces = "application/json", notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body")
+	@ApiOperation(value = "update freelancer details", response = ApiResponse.class, produces = "application/json", notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body")
 	@PutMapping("/{id}")
 	public ResponseEntity<ApiResponse> putFreelancerDetails(
 			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id,
@@ -129,7 +128,7 @@ public class FreelancerController {
 		return response;
 	}
 
-	@ApiOperation(value = "upload freelancer's resume file", response = ResumeVO.class, produces = "application/json", notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
+	@ApiOperation(value = "upload freelancer's resume file", response = ApiResponse.class, produces = "application/json", notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/resume/{id}")
 	public ResponseEntity<ApiResponse> uploadResume(
 			@ApiParam(value = "freelancer's resume file", required = true) @RequestParam MultipartFile resume,
@@ -180,7 +179,7 @@ public class FreelancerController {
 		}
 	}
 
-	@ApiOperation(value = "upload freelancer's avatar file", response = ResumeVO.class, produces = "application/json", notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
+	@ApiOperation(value = "upload freelancer's avatar file", response = ApiResponse.class, produces = "application/json", notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/avatar/{id}")
 	public ResponseEntity<ApiResponse> uploadAvatar(
 			@ApiParam(value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar,

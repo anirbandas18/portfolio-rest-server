@@ -1,5 +1,7 @@
 package com.teenthofabud.portfolio.configuration;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.ExampleMatcher;
@@ -21,12 +23,12 @@ public class QueryByExampleConfiguration {
 	
 	@Bean
 	public Sort asc() {
-		return new Sort(Direction.ASC);
+		return new Sort(Direction.ASC, Arrays.asList("id"));
 	}
 
 	@Bean
 	public Sort desc() {
-		return new Sort(Direction.DESC);
+		return new Sort(Direction.DESC, Arrays.asList("id"));
 	}
 	
 }

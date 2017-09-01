@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.teenthofabud.portfolio</groupId>
 	<artifactId>portfolio-rest-server</artifactId>
-	<version>0.1.4-SNAPSHOT</version>
+	<version>0.2.0-SNAPSHOT</version>
 
 	<name>portfolio-engine</name>
 	<url>http://13.58.63.186:6002/</url>
