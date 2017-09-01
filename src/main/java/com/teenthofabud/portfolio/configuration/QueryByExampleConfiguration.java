@@ -17,7 +17,6 @@ public class QueryByExampleConfiguration {
                 .withStringMatcher(StringMatcher.CONTAINING)
                 .withIgnoreCase()
                 .withIgnoreNullValues();
-
     }
 	
 	@Bean
