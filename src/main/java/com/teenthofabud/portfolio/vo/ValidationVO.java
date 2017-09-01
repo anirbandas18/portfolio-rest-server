@@ -10,18 +10,18 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonInclude(value = Include.NON_EMPTY)
 public class ValidationVO  {
 
-	private List<ApiResponse> errors;
+	private List<ResponseVO> errors;
 	private String message;
 
-	public List<ApiResponse> getErrors() {
+	public List<ResponseVO> getErrors() {
 		return errors;
 	}
 
-	public void setErrors(List<ApiResponse> errors) {
+	public void setErrors(List<ResponseVO> errors) {
 		this.errors = errors;
 	}
 
-	public ValidationVO(String message, List<ApiResponse> errors) {
+	public ValidationVO(String message, List<ResponseVO> errors) {
 		this.errors = errors;
 	}
 
