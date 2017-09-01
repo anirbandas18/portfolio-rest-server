@@ -2,7 +2,7 @@ package com.teenthofabud.portfolio.dto;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.teenthofabud.portfolio.configuration.constants.FreelancerFile;
+import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 
 public class FreelancerFileDTO {
 	

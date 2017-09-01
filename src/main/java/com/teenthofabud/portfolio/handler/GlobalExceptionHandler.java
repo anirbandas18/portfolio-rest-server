@@ -1,6 +1,5 @@
 package com.teenthofabud.portfolio.handler;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,12 +12,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.multipart.MultipartException;
 
-import com.teenthofabud.portfolio.exception.ServiceException;
-import com.teenthofabud.portfolio.vo.ErrorVO;
-import com.teenthofabud.portfolio.vo.ExceptionVO;
+import com.teenthofabud.portfolio.vo.ResponseVO;
 import com.teenthofabud.portfolio.vo.ValidationVO;
+
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -29,45 +28,38 @@ public class GlobalExceptionHandler {
 	@Value("${validation.error.template}")
 	private String validationErrorTemplate;
 	
-	@ExceptionHandler(value = ServiceException.class)
-	public ResponseEntity<?> handleControllerException(ServiceException e) {
-		String message = e.getMessage();
-		message = message.replaceAll(exceptionCausePlaceholder, e.getReason());
-		ErrorVO body = new ErrorVO(e.getStatus().name(), message);
+	@ExceptionHandler(value = { HttpStatusCodeException.class })
+	public ResponseEntity<ResponseVO> handleControllerExceptions(HttpStatusCodeException e) {
+		ResponseVO  body = new ResponseVO(e.getMessage());
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-		ResponseEntity<ErrorVO> response = new ResponseEntity<>(body, headers, e.getStatus());
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setDate(System.currentTimeMillis());
+		ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, headers, e.getStatusCode());
 		return response;
 	}
 	
-	@ExceptionHandler(value = {IOException.class})
-	public ResponseEntity<?> handleSystemExceptions(Exception e) {
-		ExceptionVO body = new ExceptionVO(HttpStatus.INTERNAL_SERVER_ERROR.name(), e.getClass().getName(), e.getMessage());
-		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-		ResponseEntity<ErrorVO> response = new ResponseEntity<>(body, headers, HttpStatus.INTERNAL_SERVER_ERROR);
-		return response;
-	}
 	
 	@ExceptionHandler(value = MethodArgumentNotValidException.class)
-	public ResponseEntity<?> handleValidationErrors(MethodArgumentNotValidException e) {
+	public ResponseEntity<ValidationVO> handleValidationErrors(MethodArgumentNotValidException e) {
 		BindingResult bindingResult = e.getBindingResult();
-		List<ErrorVO> errors = bindingResult.getFieldErrors().stream()
-				.map(x -> new ErrorVO(x.getField(), x.getDefaultMessage())).collect(Collectors.toList());
+		List<ResponseVO> errors = bindingResult.getFieldErrors().stream()
+				.map(x -> new ResponseVO(x.getField(), x.getDefaultMessage())).collect(Collectors.toList());
 		String message = validationErrorTemplate.replace(exceptionCausePlaceholder, bindingResult.getObjectName());
-		ValidationVO body = new ValidationVO(HttpStatus.BAD_REQUEST.name(), message, errors);
+		ValidationVO body = new ValidationVO(message, errors);
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setDate(System.currentTimeMillis());
 		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
 		return response;
 	}
 	
 	@ExceptionHandler(value = MultipartException.class)
-	public ResponseEntity<?> handleMultipartFileException(MultipartException e) {
-		ExceptionVO body = new ExceptionVO(HttpStatus.BAD_REQUEST.name(), e.getClass().getName(), e.getMessage());
+	public ResponseEntity<ValidationVO> handleMultipartFileException(MultipartException e) {
+		ValidationVO body = new ValidationVO(e.getMessage());
 		HttpHeaders headers = new HttpHeaders();
-		headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-		ResponseEntity<ErrorVO> response = new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		headers.setDate(System.currentTimeMillis());
+		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, headers, HttpStatus.BAD_REQUEST);
 		return response;
 	}
 	

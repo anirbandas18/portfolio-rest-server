@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.vo;
+/*package com.teenthofabud.portfolio.vo;
 
 public class SuccessVO {
 
@@ -14,3 +14,4 @@ public class SuccessVO {
 	}
 	
 }
+*/
