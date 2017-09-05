@@ -86,19 +86,16 @@
 			<artifactId>hibernate-validator</artifactId>
 			<version>6.0.1.Final</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>com.querydsl</groupId>
-			<artifactId>querydsl-jpa</artifactId>
-		</dependency>
 		<dependency>
-			<groupId>com.querydsl</groupId>
-			<artifactId>querydsl-apt</artifactId>
-			<scope>provided</scope>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>23.0</version>
 		</dependency>
-		<dependency>
-			<groupId>com.querydsl</groupId>
-			<artifactId>querydsl-core</artifactId>
-		</dependency> -->
+
+		<!-- <dependency> <groupId>com.querydsl</groupId> <artifactId>querydsl-jpa</artifactId> 
+			</dependency> <dependency> <groupId>com.querydsl</groupId> <artifactId>querydsl-apt</artifactId> 
+			<scope>provided</scope> </dependency> <dependency> <groupId>com.querydsl</groupId> 
+			<artifactId>querydsl-core</artifactId> </dependency> -->
 
 
 	</dependencies>
@@ -127,23 +124,11 @@
 					<useUnlimitedThreads>true</useUnlimitedThreads>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
-				<groupId>com.mysema.maven</groupId>
-				<artifactId>maven-apt-plugin</artifactId>
-				<version>1.0.4</version>
-				<executions>
-					<execution>
-						<phase>generate-sources</phase>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<configuration>
-							<outputDirectory>target/generated-sources</outputDirectory>
-							<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin> -->
+			<!-- <plugin> <groupId>com.mysema.maven</groupId> <artifactId>maven-apt-plugin</artifactId> 
+				<version>1.0.4</version> <executions> <execution> <phase>generate-sources</phase> 
+				<goals> <goal>process</goal> </goals> <configuration> <outputDirectory>target/generated-sources</outputDirectory> 
+				<processor>com.mysema.query.apt.jpa.JPAAnnotationProcessor</processor> </configuration> 
+				</execution> </executions> </plugin> -->
 		</plugins>
 		<finalName>portfolio-engine</finalName>
 	</build>

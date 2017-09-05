@@ -51,7 +51,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	@Override
 	public String create(Freelancer freelancer) throws FreelancerAlreadyExistsException {
 		// TODO Auto-generated method stub
-		String id = String.valueOf(freelancer.getDetail().hashCode());
+		String id = String.valueOf(freelancer.hashCode());
 		LOG.info("Creating freelancer with id: {}", id);
 		if(repository.exists(id)) {
 			LOG.error("Freelancer with id: {} already exists", id);

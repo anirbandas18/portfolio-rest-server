@@ -2,6 +2,7 @@ package com.teenthofabud.portfolio.model.fields;
 
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Objects;
 
 import javax.validation.constraints.Pattern;
 
@@ -90,14 +91,15 @@ public class Detail implements Comparable<Detail> {
 
 	@Override
 	public int hashCode() {
-		final int prime = 31;
+		/*final int prime = 31;
 		int result = 1;
 		result = prime * result + ((dateOfBirth == null) ? 0 : dateOfBirth.hashCode());
 		result = prime * result + ((emailId == null) ? 0 : emailId.hashCode());
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
-		return result;
+		return result;*/
+		return Objects.hash(emailId, phoneNumber);
 	}
 
 	@Override

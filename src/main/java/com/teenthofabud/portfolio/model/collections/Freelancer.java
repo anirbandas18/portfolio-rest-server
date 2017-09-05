@@ -122,6 +122,29 @@ public class Freelancer implements Comparable<Freelancer>{
 	public void setId(String id) {
 		this.id = id;
 	}
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((detail == null) ? 0 : detail.hashCode());
+		return result;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Freelancer other = (Freelancer) obj;
+		if (detail == null) {
+			if (other.detail != null)
+				return false;
+		} else if (!detail.equals(other.detail))
+			return false;
+		return true;
+	}
 	
 	
 }
