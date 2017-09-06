@@ -28,7 +28,7 @@ import com.teenthofabud.portfolio.vo.ValidationVO;
 
 
 @RestControllerAdvice
-public class ControllerResponseProcessor implements ResponseBodyAdvice<Object>{
+public class ControllerResponseHandler implements ResponseBodyAdvice<Object>{
 	
 	@Value("${freelancer.avatar.uri.regex}")
 	private String freelancerAvatarURIRegex;
@@ -41,7 +41,7 @@ public class ControllerResponseProcessor implements ResponseBodyAdvice<Object>{
 	@Value("${validation.error.template}")
 	private String validationErrorTemplate;
 	
-	private static final Logger LOG = LoggerFactory.getLogger(ControllerResponseProcessor.class);
+	private static final Logger LOG = LoggerFactory.getLogger(ControllerResponseHandler.class);
 	
 	@ExceptionHandler(value = { HttpStatusCodeException.class })
 	public ResponseEntity<ResponseVO> handleControllerExceptions(HttpStatusCodeException e) {
@@ -88,7 +88,7 @@ public class ControllerResponseProcessor implements ResponseBodyAdvice<Object>{
 		if(!pathMatcher.match(freelancerAvatarURIRegex, uri) && !pathMatcher.match(freelancerResumeURIRegex, uri)) {
 			response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 			response.getHeaders().setDate(System.currentTimeMillis());;
-			LOG.info("Adding Content-Type and Date headers to response from checked URI: {}", uri);
+			LOG.info("Response headers added to URI: {}", uri);
 		}
 		return body;
 	}

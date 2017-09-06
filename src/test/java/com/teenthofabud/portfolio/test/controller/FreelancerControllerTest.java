@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.test.controller;
+/*package com.teenthofabud.portfolio.test.controller;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -16,12 +16,16 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teenthofabud.portfolio.controller.FreelancerController;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.repository.FreelancerRepository;
@@ -30,12 +34,12 @@ import com.teenthofabud.portfolio.test.model.FreelancerTestData;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(FreelancerController.class)
-/*@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@AutoConfigureMockMvc*/
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
 public class FreelancerControllerTest {
 
-	/*@Autowired
-	private ObjectMapper objectMapper;*/
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@Autowired
 	private MockMvc mockMvc;
@@ -63,7 +67,7 @@ public class FreelancerControllerTest {
 		properties.forEach(p -> target.setPropertyValue(p.getName(), source.getPropertyValue(p.getName())));
 	}
 
-	/*@Test
+	@Test
 	public void shouldReturnFreelancerStatusAndHttpOKWhenFreelancerDetailsIsPosted() throws Exception {
 		FreelancerVO freelancerVO = new FreelancerVO();
 		freelancerVO.setId(freelancerModel.getId());
@@ -73,7 +77,7 @@ public class FreelancerControllerTest {
 		given(freelancerService.createFreelancer(freelancerModel)).willReturn(freelancerModel.getId());
 		mockMvc.perform(post("/portfolio/v1/freelancer", freelancerModel)).andDo(print()).andExpect(status().isOk())
 				.andExpect(content().json(expectedResponse));
-	}*/
+	}
 	
 	@Test
 	public void shouldReturnJSONContentTypeAndHttpOKWhenFreelancerDetailsIsPosted() throws Exception {
@@ -83,3 +87,4 @@ public class FreelancerControllerTest {
 			.andExpect(content().contentType(MediaType.APPLICATION_JSON));
 	}
 }
+*/

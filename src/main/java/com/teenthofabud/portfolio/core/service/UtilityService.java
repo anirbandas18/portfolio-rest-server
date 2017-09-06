@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.core;
+package com.teenthofabud.portfolio.core.service;
 
 import java.util.Map;
 
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
-public class Utility {
+public class UtilityService {
 	
 	@Autowired
 	private ObjectMapper mapper;

@@ -2,6 +2,8 @@ package com.teenthofabud.portfolio.vo;
 
 import java.util.Map;
 
+import javax.validation.constraints.Size;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 @JsonInclude(value = Include.NON_EMPTY)
 public class SearchVO {
 
+	@Size(min = 1)
 	private Map<String,Object> parameters;
 
 	public Map<String, Object> getParameters() {
