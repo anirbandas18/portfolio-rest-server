@@ -44,7 +44,7 @@ public class FreelancerServiceImpl implements FreelancerService {
 	private Sort asc;
 	
 	@Autowired
-	private UtilityService util;
+	private UtilityServiceImpl util;
 	
 	private static final Logger LOG = LoggerFactory.getLogger(FreelancerService.class);
 	

@@ -20,11 +20,11 @@ import com.teenthofabud.portfolio.test.model.POJO;
 import com.teenthofabud.portfolio.vo.ResponseVO;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = { PathMatcher.class, UtilityService.class, ObjectMapper.class })
+@SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = { PathMatcher.class, UtilityServiceImpl.class, ObjectMapper.class })
 public class POJOMapConversionTests {
 	
 	@Autowired
-	private UtilityService util;
+	private UtilityServiceImpl util;
 	
 	private Map<String,Object> completeMap, partialMap, differentMap, emptyMap;
 	private POJO completePojo;
