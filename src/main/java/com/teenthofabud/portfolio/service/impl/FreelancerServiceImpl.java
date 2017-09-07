@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.exception.FreelancerAlreadyExistsException;
 import com.teenthofabud.portfolio.core.exception.FreelancerNotFoundException;
-import com.teenthofabud.portfolio.core.service.UtilityService;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.model.fields.Detail;

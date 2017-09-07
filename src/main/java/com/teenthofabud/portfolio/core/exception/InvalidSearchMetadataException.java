@@ -3,10 +3,10 @@ package com.teenthofabud.portfolio.core.exception;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpStatusCodeException;
 
-public class InvalidSearchParametersException extends HttpStatusCodeException {
+public class InvalidSearchMetadataException extends HttpStatusCodeException {
 
-	public InvalidSearchParametersException(String schemaName) {
-		super(HttpStatus.BAD_REQUEST, "The search parameters doesn't confront to the schema of: " + schemaName);
+	public InvalidSearchMetadataException(String schemaName) {
+		super(HttpStatus.BAD_REQUEST, "The search metadata doesn't confront to the schema of: " + schemaName);
 		// TODO Auto-generated constructor stub
 	}
 

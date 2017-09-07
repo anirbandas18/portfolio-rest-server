@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.teenthofabud.portfolio.core.exception.InvalidSearchParametersException;
+import com.teenthofabud.portfolio.core.exception.InvalidSearchMetadataException;
 
 @Service
 public class UtilityServiceImpl {
@@ -21,7 +21,7 @@ public class UtilityServiceImpl {
 		return parameters;
 	}
 
-	public Object map2POJO(Map<String,Object> map, Class<?> clazz) throws InvalidSearchParametersException {
+	public Object map2POJO(Map<String,Object> map, Class<?> clazz) throws InvalidSearchMetadataException {
 		try {
 			Object pojo = mapper.convertValue(map, clazz);
 			return pojo;
@@ -33,7 +33,7 @@ public class UtilityServiceImpl {
 			} else {
 				schemaName = clazz.getSimpleName();
 			}
-			throw new InvalidSearchParametersException(schemaName);
+			throw new InvalidSearchMetadataException(schemaName);
 		}
 	}
 	
