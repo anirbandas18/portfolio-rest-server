@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.base.Objects;
 import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.model.fields.Location;
 import com.teenthofabud.portfolio.model.fields.Profile;
@@ -124,10 +125,7 @@ public class Freelancer implements Comparable<Freelancer>{
 	}
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((detail == null) ? 0 : detail.hashCode());
-		return result;
+		return Objects.hashCode(detail);
 	}
 	@Override
 	public boolean equals(Object obj) {
@@ -138,12 +136,7 @@ public class Freelancer implements Comparable<Freelancer>{
 		if (getClass() != obj.getClass())
 			return false;
 		Freelancer other = (Freelancer) obj;
-		if (detail == null) {
-			if (other.detail != null)
-				return false;
-		} else if (!detail.equals(other.detail))
-			return false;
-		return true;
+		return Objects.equal(detail, other.detail);
 	}
 	
 	

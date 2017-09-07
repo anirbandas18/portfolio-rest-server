@@ -81,24 +81,13 @@ public class Detail implements Comparable<Detail> {
 	@Override
 	public int compareTo(Detail o) {
 		// TODO Auto-generated method stub
-		return Comparator.comparing(Detail::getFirstName)
-				.thenComparing(Detail::getLastName)
-				.thenComparing(Detail::getEmailId)
+		return Comparator.comparing(Detail::getEmailId)
 				.thenComparing(Detail::getPhoneNumber)
-				.thenComparing(Detail::getDateOfBirth)
 				.compare(this, o);
 	}
 
 	@Override
 	public int hashCode() {
-		/*final int prime = 31;
-		int result = 1;
-		result = prime * result + ((dateOfBirth == null) ? 0 : dateOfBirth.hashCode());
-		result = prime * result + ((emailId == null) ? 0 : emailId.hashCode());
-		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
-		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
-		result = prime * result + ((phoneNumber == null) ? 0 : phoneNumber.hashCode());
-		return result;*/
 		return Objects.hash(emailId, phoneNumber);
 	}
 
@@ -110,33 +99,8 @@ public class Detail implements Comparable<Detail> {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Detail other = (Detail) obj;
-		if (dateOfBirth == null) {
-			if (other.dateOfBirth != null)
-				return false;
-		} else if (!dateOfBirth.equals(other.dateOfBirth))
-			return false;
-		if (emailId == null) {
-			if (other.emailId != null)
-				return false;
-		} else if (!emailId.equals(other.emailId))
-			return false;
-		if (firstName == null) {
-			if (other.firstName != null)
-				return false;
-		} else if (!firstName.equals(other.firstName))
-			return false;
-		if (lastName == null) {
-			if (other.lastName != null)
-				return false;
-		} else if (!lastName.equals(other.lastName))
-			return false;
-		if (phoneNumber == null) {
-			if (other.phoneNumber != null)
-				return false;
-		} else if (!phoneNumber.equals(other.phoneNumber))
-			return false;
-		return true;
+		Detail d = (Detail) obj;
+		return Objects.equals(emailId, d.emailId) && Objects.equals(phoneNumber, d.phoneNumber);
 	}
 
 	@Override
