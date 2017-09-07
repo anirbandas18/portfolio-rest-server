@@ -19,7 +19,7 @@ public class UtilityService {
 		return parameters;
 	}
 
-	public Object map2POJO(Map<String,Object> map, Class<?> clazz) {
+	public Object map2POJO(Map<String,Object> map, Class<?> clazz) throws IllegalArgumentException {
 		Object pojo = mapper.convertValue(map, clazz);
 		return pojo;
 	}

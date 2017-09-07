@@ -21,7 +21,7 @@ import com.teenthofabud.portfolio.vo.ResponseVO;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.NONE, classes = { PathMatcher.class, UtilityService.class, ObjectMapper.class })
-public class UtilityServiceTest {
+public class POJOMapConversionTests {
 	
 	@Autowired
 	private UtilityService util;
@@ -80,6 +80,11 @@ public class UtilityServiceTest {
 	public void shouldNotMatchCompletePOJOForEmptyMap() {
 		Object o = util.map2POJO(emptyMap, POJO.class);
 		Assert.assertNotEquals(completePojo, o);
+	}
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void shouldThrowExceptionWhenMapAndPOJOAreDifferent() {
+		util.map2POJO(differentMap, POJO.class);
 	}
 	
 }
