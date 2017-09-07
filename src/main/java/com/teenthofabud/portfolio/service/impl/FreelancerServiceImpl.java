@@ -31,7 +31,7 @@ import com.teenthofabud.portfolio.repository.FreelancerRepository;
 import com.teenthofabud.portfolio.service.FreelancerService;
 
 @Component
-@Transactional(rollbackFor = { FreelancerAlreadyExistsException.class, FreelancerNotFoundException.class })
+@Transactional(rollbackFor = { FreelancerAlreadyExistsException.class, FreelancerNotFoundException.class, IOException.class })
 public class FreelancerServiceImpl implements FreelancerService {
 
 	@Autowired
