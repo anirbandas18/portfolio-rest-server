@@ -40,7 +40,7 @@ import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.service.FreelancerService;
-import com.teenthofabud.portfolio.service.impl.UtilityServiceImpl;
+import com.teenthofabud.portfolio.service.UtilityService;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
 import com.teenthofabud.portfolio.vo.ResponseVO;
 import com.teenthofabud.portfolio.vo.ValidationVO;
@@ -63,7 +63,7 @@ public class FreelancerController {
 	@Autowired
 	private FreelancerService freelancerService;
 	@Autowired
-	private UtilityServiceImpl util;
+	private UtilityService util;
 	@Autowired
 	private Sort asc;
 	@Autowired
@@ -97,28 +97,28 @@ public class FreelancerController {
 			@ApiResponse(code = 400, message = "Freelancer search parameters validations failed with error", response = ResponseVO.class),
 			@ApiResponse(code = 404, message = "Freelancer not found matching the search criteria", response = ResponseVO.class),
 			@ApiResponse(code = 422, message = "Freelancer search parameters are invalid", response = ResponseVO.class) })
-	@ApiOperation(value = "read single freelancer details matching criteria", response = Freelancer.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read details of freelancer from database as identified by values of it's properties and expose it", responseHeaders = {
+	@ApiOperation(value = "read details of a single freelancer matching the criteria", response = Freelancer.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read details of freelancer from database as identified by values of it's properties and expose it", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server JSON"),
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@GetMapping("/search/single")
 	public ResponseEntity<Freelancer> getSingleFreelancer(
-			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam String firstName,
-			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam String lastName,
-			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = false) @RequestParam String phoneNumber,
-			@ApiParam(name = "emailId", value = "freelancer's email id", required = false) @RequestParam String emailId,
+			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam(required = false) String firstName,
+			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam(required = false) String lastName,
+			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = true) @RequestParam(required = true) String phoneNumber,
+			@ApiParam(name = "emailId", value = "freelancer's email id", required = false) @RequestParam(required = false) String emailId,
 			@ApiParam(value = "aggregates all request query parameters to map", access = "internal", hidden = true) @RequestParam Map<String,String> requestParameters)
 			throws HttpStatusCodeException {
 		LOG.info("Search parameters: {}", requestParameters.toString());
-		Map<String,Object> serachParameters = requestParamsToDetailPOJOMap(requestParameters);
-		Detail freelancerDetails = (Detail) util.map2POJO(serachParameters, Detail.class);
+		Map<String,Object> searchParameters = requestParamsToDetailPOJOMap(requestParameters);
+		Detail freelancerDetails = (Detail) util.map2POJO(searchParameters, Detail.class);
 		Freelancer freelancer = freelancerService.read(freelancerDetails);
+		LOG.info("Search successful");
 		ResponseEntity<Freelancer> response = ResponseEntity.ok().body(freelancer);
 		return response;
 	}
 
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Freelancers found matching criteria", response = Freelancer.class),
-			@ApiResponse(code = 400, message = "Freelancer search parameters validations failed with error", response = ResponseVO.class),
 			@ApiResponse(code = 404, message = "Freelancer not found matching the search criteria", response = ResponseVO.class),
 			@ApiResponse(code = 422, message = "Freelancer search parameters are invalid", response = ResponseVO.class) })
 	@ApiOperation(value = "read multiple freelancer details matching criteria", responseContainer = "List", response = Freelancer.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read all freelancers from database as identified by values of properties and expose it", responseHeaders = {
@@ -126,21 +126,27 @@ public class FreelancerController {
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@GetMapping("/search/multiple/{order}")
 	public ResponseEntity<?> getMultipleFreelancers(
-			@RequestParam Map<String,Object> searchParameters,
-			@ApiParam(value = "search result order", required = false) @PathVariable String sortOrder)
+			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam(required = false) String firstName,
+			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam(required = false) String lastName,
+			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = true) @RequestParam(required = true) String phoneNumber,
+			@ApiParam(name = "emailId", value = "freelancer's email id", required = false) @RequestParam(required = false) String emailId,
+			@ApiParam(value = "aggregates all request query parameters to map", access = "internal", hidden = true) @RequestParam Map<String,String> requestParameters,
+			@ApiParam(name = "order", value = "search result order", required = false) @PathVariable String sortOrder)
 			throws HttpStatusCodeException {
-		LOG.info("Search parameters: {}", searchParameters.toString());
-		Detail freelancerDetails = (Detail) util.map2POJO(searchParameters, Detail.class);
-		List<Sort> order = new ArrayList<>();
-		if (StringUtils.hasText(sortOrder)) {
-			SortOrder x = SortOrder.valueOf(sortOrder);
-			order.add(x == SortOrder.ASC ? asc : desc);
-		} else {
-			order.add(asc);
+		LOG.info("Search parameters: {}", requestParameters.toString());
+		List<Freelancer> matchingFreelancers = new ArrayList<>();
+		Sort[] order = parseSortOrder(sortOrder);
+		try {
+			Map<String,Object> searchParameters = requestParamsToDetailPOJOMap(requestParameters);
+			Detail freelancerDetails = (Detail) util.map2POJO(searchParameters, Detail.class);
+			LOG.info("Fetching search results of all freelancers in order: {}", order[0]);
+			matchingFreelancers = freelancerService.readAll(freelancerDetails, order);
+		} catch (EmptySearchParametersException e) {
+			LOG.info("Fetching all freelancers since search parameters are not provided");
+			matchingFreelancers = freelancerService.readAll(order);
 		}
-		LOG.info("Fetching results in order: {}", order.get(0));
-		List<Freelancer> matchingFreelancers = freelancerService.readAll(freelancerDetails, order.toArray(new Sort[1]));
 		ResponseEntity<?> response = ResponseEntity.ok().body(matchingFreelancers);
+		LOG.info("Search successful");
 		return response;
 	}
 
@@ -152,17 +158,13 @@ public class FreelancerController {
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@GetMapping("/all/{order}")
 	public ResponseEntity<List<Freelancer>> getAllFreelancers(
-			@ApiParam(value = "search result order", required = false) @PathVariable String sortOrder)
+			@ApiParam(name = "order", value = "search result order", required = false) @PathVariable String sortOrder)
 			throws HttpStatusCodeException {
-		List<Sort> order = new ArrayList<>();
-		if (StringUtils.hasText(sortOrder)) {
-			SortOrder x = SortOrder.valueOf(sortOrder);
-			order.add(x == SortOrder.ASC ? asc : desc);
-		} else {
-			order.add(asc);
-		}
-		List<Freelancer> matchingFreelancers = freelancerService.readAll(order.toArray(new Sort[1]));
+		Sort[] order = parseSortOrder(sortOrder);
+		LOG.info("Fetching search results of all freelancers in order: {}", order[0]);
+		List<Freelancer> matchingFreelancers = freelancerService.readAll(order);
 		ResponseEntity<List<Freelancer>> response = ResponseEntity.ok().body(matchingFreelancers);
+		LOG.info("Search successful");
 		return response;
 	}
 
@@ -174,7 +176,7 @@ public class FreelancerController {
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@GetMapping("/{id}")
 	public ResponseEntity<Freelancer> getFreelancerDetails(
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
+			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id)
 			throws HttpStatusCodeException {
 		Freelancer freelancer = freelancerService.read(id);
 		ResponseEntity<Freelancer> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
@@ -190,7 +192,7 @@ public class FreelancerController {
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ResponseVO> deleteFreelancerDetails(
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
+			@ApiParam(name = "id", value = "freelancer unique id", required = true)  @PathVariable String id)
 			throws HttpStatusCodeException {
 		Boolean changed = freelancerService.delete(id);
 		ResponseVO body = new ResponseVO();
@@ -209,14 +211,15 @@ public class FreelancerController {
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@PostMapping
 	public ResponseEntity<ResponseVO> postFreelancerDetails(
-			@ApiParam(value = "freelancer details", required = true) @Valid @RequestBody FreelancerVO vo)
+			@ApiParam(name = "freelancerData", value = "freelancer entity data", required = true) @Valid @RequestBody FreelancerVO freelancerData)
 			throws HttpStatusCodeException {
+		LOG.info("Freelancer data recieved: {}", freelancerData);
 		Freelancer model = new Freelancer();
-		model.setDetail(vo.getDetail());
-		model.setLanguagesKnown(vo.getLanguagesKnown());
-		model.setLocation(vo.getLocation());
-		model.setProfile(vo.getProfile());
-		model.setSocialLinks(vo.getSocialLinks());
+		model.setDetail(freelancerData.getDetail());
+		model.setLanguagesKnown(freelancerData.getLanguagesKnown());
+		model.setLocation(freelancerData.getLocation());
+		model.setProfile(freelancerData.getProfile());
+		model.setSocialLinks(freelancerData.getSocialLinks());
 		String id = freelancerService.create(model);
 		ResponseVO success = new ResponseVO();
 		success.setStatus("id");
@@ -234,16 +237,17 @@ public class FreelancerController {
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@PutMapping("/{id}")
 	public ResponseEntity<ResponseVO> putFreelancerDetails(
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id,
-			@ApiParam(value = "freelancer details", required = true) @Valid @RequestBody FreelancerVO vo)
+			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id,
+			@ApiParam(name = "freelancerData", value = "freelancer entity data", required = true) @Valid @RequestBody FreelancerVO freelancerData)
 			throws HttpStatusCodeException {
+		LOG.info("Freelancer data recieved: {} for ID: {}", freelancerData, id);
 		Freelancer model = new Freelancer();
 		model.setId(id);
-		model.setDetail(vo.getDetail());
-		model.setLanguagesKnown(vo.getLanguagesKnown());
-		model.setLocation(vo.getLocation());
-		model.setProfile(vo.getProfile());
-		model.setSocialLinks(vo.getSocialLinks());
+		model.setDetail(freelancerData.getDetail());
+		model.setLanguagesKnown(freelancerData.getLanguagesKnown());
+		model.setLocation(freelancerData.getLocation());
+		model.setProfile(freelancerData.getProfile());
+		model.setSocialLinks(freelancerData.getSocialLinks());
 		Boolean changed = freelancerService.update(id, model);
 		ResponseVO body = new ResponseVO();
 		body.setStatus("updated");
@@ -259,8 +263,8 @@ public class FreelancerController {
 	@ApiOperation(value = "upload freelancer's resume file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/resume/{id}")
 	public ResponseEntity<ResponseVO> uploadResume(
-			@ApiParam(value = "freelancer's resume file", required = true) @RequestParam MultipartFile resume,
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
+			@ApiParam(name = "resume", value = "freelancer's resume file", required = true) @RequestParam MultipartFile resume,
+			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id)
 			throws HttpStatusCodeException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
 		dto.setBaseFileLocation(resumeBaseLocation);
@@ -285,7 +289,7 @@ public class FreelancerController {
 	@ApiOperation(value = "download freelancer's resume file", response = ByteArrayResource.class, notes = "Download resume file of freelancer as identified by its respective ID from the file system")
 	@GetMapping("/resume/{id}")
 	public ResponseEntity<Resource> downloadResume(
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
+			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id)
 			throws HttpStatusCodeException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
 		dto.setId(id);
@@ -313,8 +317,8 @@ public class FreelancerController {
 	@ApiOperation(value = "upload freelancer's avatar file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/avatar/{id}")
 	public ResponseEntity<ResponseVO> uploadAvatar(
-			@ApiParam(value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar,
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
+			@ApiParam(name = "avatar", value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar,
+			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id)
 			throws HttpStatusCodeException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
 		dto.setBaseFileLocation(avatarBaseLocation);
@@ -339,7 +343,7 @@ public class FreelancerController {
 	@ApiOperation(value = "download freelancer's avatar file", response = ByteArrayResource.class, notes = "Download avatar file of freelancer as identified by its respective ID from the file system")
 	@GetMapping("/avatar/{id}")
 	public ResponseEntity<Resource> downloadAvatar(
-			@ApiParam(value = "freelancer ID", required = true) @PathVariable String id)
+			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id)
 			throws HttpStatusCodeException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
 		dto.setId(id);
@@ -362,6 +366,7 @@ public class FreelancerController {
 
 	private Map<String,Object> requestParamsToDetailPOJOMap(Map<String,String> source) throws EmptySearchParametersException {
 		if(source.isEmpty()) {
+			LOG.error("No search parameters provided");
 			throw new EmptySearchParametersException();
 		} else {
 			Map<String,Object> target = new LinkedHashMap<>();
@@ -369,8 +374,21 @@ public class FreelancerController {
 				String value = source.get(key);
 				target.put(key, value);
 			}
+			LOG.info("Search parameters parsed to respective primitve types");
 			return target;
 		}
+	}
+	
+	private Sort[] parseSortOrder(String sortOrder) {
+		List<Sort> order = new ArrayList<>();
+		if (StringUtils.hasText(sortOrder)) {
+			SortOrder x = SortOrder.valueOf(sortOrder);
+			order.add(x == SortOrder.ASC ? asc : desc);
+		} else {
+			LOG.info("Defaulting to ASC search order since no search order is provided");
+			order.add(asc);
+		}
+		return order.toArray(new Sort[1]);
 	}
 	
 }
