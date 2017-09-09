@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.test.service;
+/*package com.teenthofabud.portfolio.test.service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.PathMatcher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.teenthofabud.portfolio.core.service.UtilityService;
+import com.teenthofabud.portfolio.service.impl.UtilityServiceImpl;
 import com.teenthofabud.portfolio.test.model.POJO;
 import com.teenthofabud.portfolio.vo.ResponseVO;
 
@@ -88,3 +88,4 @@ public class POJOMapConversionTests {
 	}
 	
 }
+*/

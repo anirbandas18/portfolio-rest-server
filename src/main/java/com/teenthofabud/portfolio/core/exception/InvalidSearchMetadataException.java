@@ -6,7 +6,7 @@ import org.springframework.web.client.HttpStatusCodeException;
 public class InvalidSearchMetadataException extends HttpStatusCodeException {
 
 	public InvalidSearchMetadataException(String schemaName) {
-		super(HttpStatus.BAD_REQUEST, "The search metadata doesn't confront to the schema of: " + schemaName);
+		super(HttpStatus.UNPROCESSABLE_ENTITY, "The search metadata doesn't confront to the schema of: " + schemaName);
 		// TODO Auto-generated constructor stub
 	}
 

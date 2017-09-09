@@ -20,6 +20,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
@@ -60,14 +61,15 @@ public class ControllerResponseHandler implements ResponseBodyAdvice<Object>{
 				.map(x -> new ResponseVO(x.getField(), x.getDefaultMessage())).collect(Collectors.toList());
 		String message = validationErrorTemplate.replace(exceptionCausePlaceholder, bindingResult.getObjectName());
 		ValidationVO body = new ValidationVO(message, errors);
-		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_ENTITY);
 		return response;
 	}
 	
 	@ExceptionHandler(value = MultipartException.class)
 	public ResponseEntity<ValidationVO> handleMultipartFileException(MultipartException e) {
 		ValidationVO body = new ValidationVO(e.getMessage());
-		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+		HttpStatus code = e instanceof MaxUploadSizeExceededException ? HttpStatus.BAD_REQUEST : HttpStatus.UNSUPPORTED_MEDIA_TYPE;
+		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, code);
 		return response;
 	}
 

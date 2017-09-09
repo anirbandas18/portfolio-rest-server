@@ -2,7 +2,9 @@ package com.teenthofabud.portfolio.controller;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -33,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.constants.SortOrder;
+import com.teenthofabud.portfolio.core.exception.EmptySearchParametersException;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.model.fields.Detail;
@@ -40,7 +43,6 @@ import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.service.impl.UtilityServiceImpl;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
 import com.teenthofabud.portfolio.vo.ResponseVO;
-import com.teenthofabud.portfolio.vo.SearchVO;
 import com.teenthofabud.portfolio.vo.ValidationVO;
 
 import io.swagger.annotations.Api;
@@ -70,37 +72,65 @@ public class FreelancerController {
 	private String resumeBaseLocation;
 	@Value("${avatar.base.location}")
 	private String avatarBaseLocation;
-
-	@ApiResponses(value = {
+	
+	/*@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Freelancer found matching criteria", response = Freelancer.class),
-			@ApiResponse(code = 400, message = "Freelancer search criteria validations failed with error", response = ValidationVO.class),
+			@ApiResponse(code = 422, message = "Freelancer search criteria validations failed with error", response = ValidationVO.class),
 			@ApiResponse(code = 404, message = "Freelancer not found matching the criteria", response = ResponseVO.class) })
 	@ApiOperation(value = "read single freelancer details matching criteria", response = Freelancer.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read details of freelancer from database as identified by values of it's properties and expose it", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@GetMapping("/search/single")
-	public ResponseEntity<Freelancer> getSingleFreelancer(
-			@ApiParam(value = "freelancer search criterias", required = true) @Valid @RequestBody SearchVO criteria)
+	public ResponseEntity<ResponseVO> getSingleFreelancer(
+			@RequestParam Map<String,String> params,
+			@ApiParam(value = "freelancer search criterias", required = true, name = "id") @RequestParam Integer id,
+@ApiParam(value = "freelancer search criterias", required = true, name = "name") @RequestParam String name)
 			throws HttpStatusCodeException {
-		Detail freelancerDetails = (Detail) util.map2POJO(criteria.getParameters(), Detail.class);
+		LOG.info(params.toString());
+		ResponseVO freelancer = new ResponseVO("parsed", params.toString());
+		ResponseEntity<ResponseVO> response = ResponseEntity.ok().body(freelancer);
+		return response;
+	}*/
+
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "Freelancer found matching criteria", response = Freelancer.class),
+			@ApiResponse(code = 400, message = "Freelancer search parameters validations failed with error", response = ResponseVO.class),
+			@ApiResponse(code = 404, message = "Freelancer not found matching the search criteria", response = ResponseVO.class),
+			@ApiResponse(code = 422, message = "Freelancer search parameters are invalid", response = ResponseVO.class) })
+	@ApiOperation(value = "read single freelancer details matching criteria", response = Freelancer.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read details of freelancer from database as identified by values of it's properties and expose it", responseHeaders = {
+			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server JSON"),
+			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
+	@GetMapping("/search/single")
+	public ResponseEntity<Freelancer> getSingleFreelancer(
+			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam String firstName,
+			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam String lastName,
+			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = false) @RequestParam String phoneNumber,
+			@ApiParam(name = "emailId", value = "freelancer's email id", required = false) @RequestParam String emailId,
+			@ApiParam(value = "aggregates all request query parameters to map", access = "internal", hidden = true) @RequestParam Map<String,String> requestParameters)
+			throws HttpStatusCodeException {
+		LOG.info("Search parameters: {}", requestParameters.toString());
+		Map<String,Object> serachParameters = requestParamsToDetailPOJOMap(requestParameters);
+		Detail freelancerDetails = (Detail) util.map2POJO(serachParameters, Detail.class);
 		Freelancer freelancer = freelancerService.read(freelancerDetails);
 		ResponseEntity<Freelancer> response = ResponseEntity.ok().body(freelancer);
 		return response;
 	}
 
 	@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Freelancers found matching criteria", response = Freelancer.class, responseContainer = "List"),
-			@ApiResponse(code = 400, message = "Freelancer search criteria validations failed with error", response = ValidationVO.class),
-			@ApiResponse(code = 404, message = "Freelancers not found matching the criteria", response = ResponseVO.class) })
+			@ApiResponse(code = 200, message = "Freelancers found matching criteria", response = Freelancer.class),
+			@ApiResponse(code = 400, message = "Freelancer search parameters validations failed with error", response = ResponseVO.class),
+			@ApiResponse(code = 404, message = "Freelancer not found matching the search criteria", response = ResponseVO.class),
+			@ApiResponse(code = 422, message = "Freelancer search parameters are invalid", response = ResponseVO.class) })
 	@ApiOperation(value = "read multiple freelancer details matching criteria", responseContainer = "List", response = Freelancer.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read all freelancers from database as identified by values of properties and expose it", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@GetMapping("/search/multiple/{order}")
 	public ResponseEntity<?> getMultipleFreelancers(
-			@ApiParam(value = "freelancer search criterias", required = true) @Valid @RequestBody SearchVO criteria,
+			@RequestParam Map<String,Object> searchParameters,
 			@ApiParam(value = "search result order", required = false) @PathVariable String sortOrder)
 			throws HttpStatusCodeException {
-		Detail freelancerDetails = (Detail) util.map2POJO(criteria.getParameters(), Detail.class);
+		LOG.info("Search parameters: {}", searchParameters.toString());
+		Detail freelancerDetails = (Detail) util.map2POJO(searchParameters, Detail.class);
 		List<Sort> order = new ArrayList<>();
 		if (StringUtils.hasText(sortOrder)) {
 			SortOrder x = SortOrder.valueOf(sortOrder);
@@ -108,6 +138,7 @@ public class FreelancerController {
 		} else {
 			order.add(asc);
 		}
+		LOG.info("Fetching results in order: {}", order.get(0));
 		List<Freelancer> matchingFreelancers = freelancerService.readAll(freelancerDetails, order.toArray(new Sort[1]));
 		ResponseEntity<?> response = ResponseEntity.ok().body(matchingFreelancers);
 		return response;
@@ -172,7 +203,7 @@ public class FreelancerController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 201, message = "Freelancer created", response = ResponseVO.class),
 			@ApiResponse(code = 409, message = "Freelancer already exists with phone number/email id", response = ResponseVO.class),
-			@ApiResponse(code = 400, message = "Freelancer field validations failed with error", response = ValidationVO.class) })
+			@ApiResponse(code = 422, message = "Freelancer field validations failed with error", response = ValidationVO.class) })
 	@ApiOperation(value = "create freelancer details", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
@@ -197,7 +228,7 @@ public class FreelancerController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 201, message = "Freelancer created", response = ResponseVO.class),
 			@ApiResponse(code = 409, message = "Freelancer already exists with phone number/email id", response = ResponseVO.class),
-			@ApiResponse(code = 400, message = "Freelancer field validations failed with error", response = ValidationVO.class) })
+			@ApiResponse(code = 422, message = "Freelancer field validations failed with error", response = ValidationVO.class) })
 	@ApiOperation(value = "update freelancer details", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
@@ -224,7 +255,7 @@ public class FreelancerController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 226, message = "Freelancer resume file uploaded", response = ResponseVO.class),
 			@ApiResponse(code = 500, message = "Error saving freelancer resume file", response = ResponseVO.class),
-			@ApiResponse(code = 400, message = "Freelancer resume file is invalid", response = ValidationVO.class) })
+			@ApiResponse(code = 422, message = "Freelancer resume file is invalid", response = ValidationVO.class) })
 	@ApiOperation(value = "upload freelancer's resume file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/resume/{id}")
 	public ResponseEntity<ResponseVO> uploadResume(
@@ -278,7 +309,7 @@ public class FreelancerController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 226, message = "Freelancer avatar file uploaded", response = ResponseVO.class),
 			@ApiResponse(code = 500, message = "Error saving freelancer avatar file", response = ResponseVO.class),
-			@ApiResponse(code = 400, message = "Freelancer avatar file is invalid", response = ValidationVO.class) })
+			@ApiResponse(code = 422, message = "Freelancer avatar file is invalid", response = ValidationVO.class) })
 	@ApiOperation(value = "upload freelancer's avatar file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/avatar/{id}")
 	public ResponseEntity<ResponseVO> uploadAvatar(
@@ -329,4 +360,17 @@ public class FreelancerController {
 		}
 	}
 
+	private Map<String,Object> requestParamsToDetailPOJOMap(Map<String,String> source) throws EmptySearchParametersException {
+		if(source.isEmpty()) {
+			throw new EmptySearchParametersException();
+		} else {
+			Map<String,Object> target = new LinkedHashMap<>();
+			for(String key : source.keySet()) {
+				String value = source.get(key);
+				target.put(key, value);
+			}
+			return target;
+		}
+	}
+	
 }
