@@ -72,25 +72,6 @@ public class FreelancerController {
 	private String resumeBaseLocation;
 	@Value("${avatar.base.location}")
 	private String avatarBaseLocation;
-	
-	/*@ApiResponses(value = {
-			@ApiResponse(code = 200, message = "Freelancer found matching criteria", response = Freelancer.class),
-			@ApiResponse(code = 422, message = "Freelancer search criteria validations failed with error", response = ValidationVO.class),
-			@ApiResponse(code = 404, message = "Freelancer not found matching the criteria", response = ResponseVO.class) })
-	@ApiOperation(value = "read single freelancer details matching criteria", response = Freelancer.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read details of freelancer from database as identified by values of it's properties and expose it", responseHeaders = {
-			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
-			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
-	@GetMapping("/search/single")
-	public ResponseEntity<ResponseVO> getSingleFreelancer(
-			@RequestParam Map<String,String> params,
-			@ApiParam(value = "freelancer search criterias", required = true, name = "id") @RequestParam Integer id,
-@ApiParam(value = "freelancer search criterias", required = true, name = "name") @RequestParam String name)
-			throws HttpStatusCodeException {
-		LOG.info(params.toString());
-		ResponseVO freelancer = new ResponseVO("parsed", params.toString());
-		ResponseEntity<ResponseVO> response = ResponseEntity.ok().body(freelancer);
-		return response;
-	}*/
 
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Freelancer found matching criteria", response = Freelancer.class),
