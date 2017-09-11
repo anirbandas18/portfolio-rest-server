@@ -20,8 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -36,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.constants.SortOrder;
 import com.teenthofabud.portfolio.core.exception.EmptySearchParametersException;
+import com.teenthofabud.portfolio.core.processor.ResumeFileValidator;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.model.fields.Detail;
@@ -65,13 +68,18 @@ public class FreelancerController {
 	@Autowired
 	private UtilityService util;
 	@Autowired
+	private ResumeFileValidator resumeValidator;
+	@Autowired
 	private Sort asc;
 	@Autowired
 	private Sort desc;
-	@Value("${resume.base.location}")
-	private String resumeBaseLocation;
-	@Value("${avatar.base.location}")
-	private String avatarBaseLocation;
+	@Value("${file.base.location}")
+	private String fileBaseLocation;
+	
+	@InitBinder(value = {"resume", "avatar"})
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(resumeValidator);
+    }	
 
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Freelancer found matching criteria", response = Freelancer.class),
@@ -244,11 +252,11 @@ public class FreelancerController {
 	@ApiOperation(value = "upload freelancer's resume file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
 	@PutMapping("/resume/{id}")
 	public ResponseEntity<ResponseVO> uploadResume(
-			@ApiParam(name = "resume", value = "freelancer's resume file", required = true) @RequestParam MultipartFile resume,
+			@ApiParam(name = "resume", value = "freelancer's resume file", required = true) @RequestParam @Valid MultipartFile resume,
 			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id)
 			throws HttpStatusCodeException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
-		dto.setBaseFileLocation(resumeBaseLocation);
+		dto.setBaseFileLocation(fileBaseLocation);
 		dto.setId(id);
 		dto.setFile(resume);
 		dto.setType(FreelancerFile.RESUME);
@@ -302,7 +310,7 @@ public class FreelancerController {
 			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id)
 			throws HttpStatusCodeException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
-		dto.setBaseFileLocation(avatarBaseLocation);
+		dto.setBaseFileLocation(fileBaseLocation);
 		dto.setId(id);
 		dto.setFile(avatar);
 		dto.setType(FreelancerFile.AVATAR);

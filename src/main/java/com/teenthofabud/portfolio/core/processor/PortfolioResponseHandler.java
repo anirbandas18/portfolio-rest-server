@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.core.handler;
+package com.teenthofabud.portfolio.core.processor;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,7 +30,6 @@ import com.teenthofabud.portfolio.vo.ResponseVO;
 import com.teenthofabud.portfolio.vo.ValidationVO;
 
 @RestControllerAdvice
-@Component
 public class PortfolioResponseHandler /*extends  ResponseEntityExceptionHandler */implements ResponseBodyAdvice<Object>/*, HandlerExceptionResolver*/ {
 
 	@Value("${exception.cause.placeholder}")
@@ -54,23 +52,7 @@ public class PortfolioResponseHandler /*extends  ResponseEntityExceptionHandler 
 		return response;
 	}
 	
-	/*@ExceptionHandler(value = { UnknownServerHttpRequestImplException.class })
-	public ResponseEntity<ResponseVO> handleHandlerExceptions(HttpStatusCodeException e) {
-		ResponseVO body = new ResponseVO();
-		body.setStatus(e.getStatusCode().name());
-		body.setMessage(e.getStatusText());
-		ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, e.getStatusCode());
-		return response;
-	}*/
-
-	
-	/*
-	 * replaced by handleMethodArgumentNotValid method of parent class,
-	 * since handleException of parent class already has 
-	 * @ExceptionHandler(value = MethodArgumentNotValidException.class) defined,
-	 * hence ambiguity
-	 * 
-	 */ @ExceptionHandler(value = MethodArgumentNotValidException.class)
+	@ExceptionHandler(value = MethodArgumentNotValidException.class)
 	public ResponseEntity<ValidationVO> handleRequestValidationErrors(MethodArgumentNotValidException e) {
 		BindingResult bindingResult = e.getBindingResult();
 		List<ResponseVO> errors = bindingResult.getFieldErrors().stream()
@@ -111,21 +93,5 @@ public class PortfolioResponseHandler /*extends  ResponseEntityExceptionHandler 
 		return body;
 	}
 
-	/*@Override
-	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,
-			Exception ex) {
-		// TODO Auto-generated method stub
-		response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		response.setDateHeader("date", System.currentTimeMillis());
-		try {
-			response.getWriter().write(ex.getMessage());
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return new ModelAndView();
-	}
-	*/
 	
 }
