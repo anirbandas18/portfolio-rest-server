@@ -146,9 +146,12 @@ public class FreelancerServiceImpl implements FreelancerService {
 		String id = dto.getId();
 		LOG.info("Importing {} file of freelancer with id: {}", dto.getType(), id);
 		if (repository.exists(id)) {
-			Path filePath = Paths.get(dto.getBaseFileLocation(), id, dto.getType().name().toLowerCase(), dto.getFile().getOriginalFilename());
+			String fileName = dto.getFile().getOriginalFilename();
+			Path dirPath = Paths.get(dto.getBaseFileLocation(), id, dto.getType().name().toLowerCase());
+			dirPath = Files.createDirectories(dirPath);
+			Path filePath = Paths.get(dirPath.toString(), fileName);
 			Path writtenPath = Files.write(filePath, dto.getFile().getBytes());
-			LOG.info("{} file of freelancer written to {}", dto.getType(), filePath);
+			LOG.info("{} file: {} of freelancer written to {}", dto.getType(), fileName, dirPath);
 			Freelancer freelancer = repository.findOne(dto.getId());
 			switch(dto.getType()) {
 			case AVATAR :

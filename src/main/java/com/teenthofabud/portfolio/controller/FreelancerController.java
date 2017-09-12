@@ -20,7 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.WebDataBinder;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -77,7 +77,7 @@ public class FreelancerController {
 	private String fileBaseLocation;
 	
 	@InitBinder(value = {"resume", "avatar"})
-    protected void initBinder(WebDataBinder binder) {
+    public void initBinder(DataBinder binder) {
         binder.addValidators(resumeValidator);
     }	
 
@@ -268,7 +268,7 @@ public class FreelancerController {
 			ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, HttpStatus.IM_USED);
 			return response;
 		} catch (IOException e) {
-			LOG.error(e.getMessage());
+			LOG.error("Error saving file:{} ", e);
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
