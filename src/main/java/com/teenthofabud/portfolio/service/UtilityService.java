@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.http.server.ServerHttpRequest;
 
 import com.teenthofabud.portfolio.core.exception.InvalidSearchMetadataException;
+import com.teenthofabud.portfolio.core.exception.InvalidSearchParametersException;
 import com.teenthofabud.portfolio.core.exception.UnknownServerHttpRequestImplException;
 
 public interface UtilityService {
@@ -19,5 +20,7 @@ public interface UtilityService {
 	public String matchesRequest(List<String> filteredPaths, HttpServletRequest request);
 	
 	public HttpServletRequest springToServletHttpRequestConverter(ServerHttpRequest spring)throws UnknownServerHttpRequestImplException;
+	
+	public void validateBean(Object pojo) throws InvalidSearchParametersException;
 
 }
