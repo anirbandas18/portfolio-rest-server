@@ -87,10 +87,11 @@ public class PortfolioResponseHandler /* extends ResponseEntityExceptionHandler 
 		violations.forEach(v -> {
 			payloads.addAll(v.getConstraintDescriptor().getPayload());
 		});
-		String cause = payloads.stream().map(p -> p.getSimpleName()).collect(Collectors.joining(","));
+		Set<String> causes = payloads.stream().map(p -> p.getEnclosingClass().getSimpleName()).collect(Collectors.toSet());
+		String cause = String.join(",", causes);
 		String message = validationErrorTemplate.replace(exceptionCausePlaceholder, cause);
 		List<ResponseVO> errors = violations.stream().map(x -> 
-			new ResponseVO(((ConstraintDescriptorImpl<?>)x.getConstraintDescriptor()).getElementType().name(), x.getMessage()))
+			new ResponseVO(x.getConstraintDescriptor().getPayload().iterator().next().getSimpleName(), x.getMessage()))
 				.collect(Collectors.toList());
 		ValidationVO body = new ValidationVO(message, errors);
 		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_ENTITY);
