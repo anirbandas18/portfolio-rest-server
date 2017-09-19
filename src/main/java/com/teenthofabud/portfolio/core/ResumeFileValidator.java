@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.core.processor;
+package com.teenthofabud.portfolio.core;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;

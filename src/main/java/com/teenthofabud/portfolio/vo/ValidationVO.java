@@ -23,6 +23,7 @@ public class ValidationVO  {
 
 	public ValidationVO(String message, List<ResponseVO> errors) {
 		this.errors = errors;
+		this.message = message;
 	}
 
 	public String getMessage() {
@@ -36,6 +37,11 @@ public class ValidationVO  {
 	public ValidationVO(String message) {
 		super();
 		this.message = message;
+	}
+
+	public ValidationVO() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
 
 	

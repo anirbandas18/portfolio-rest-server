@@ -4,12 +4,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
 import org.slf4j.Logger;
@@ -25,9 +22,7 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teenthofabud.portfolio.core.exception.InvalidSearchMetadataException;
-import com.teenthofabud.portfolio.core.exception.InvalidSearchParametersException;
 import com.teenthofabud.portfolio.core.exception.UnknownServerHttpRequestImplException;
-import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.service.UtilityService;
 
 @Service
@@ -112,10 +107,10 @@ public class UtilityServiceImpl implements UtilityService{
 	};
 
 	@Override
-	public void validateBean(Object pojo) throws InvalidSearchParametersException {
+	public String generateIdForModel(Object model) {
 		// TODO Auto-generated method stub
-		LOG.info("Manual triggering of validation for request parameters");
-		Set<ConstraintViolation<Detail>> errors = validator.validate(pojo);
+		
+		return null;
 	}
 	
 }

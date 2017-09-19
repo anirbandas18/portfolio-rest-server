@@ -8,7 +8,11 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.Validator;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +42,13 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.teenthofabud.portfolio.core.ResumeFileValidator;
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.constants.SortOrder;
 import com.teenthofabud.portfolio.core.exception.EmptySearchParametersException;
-import com.teenthofabud.portfolio.core.processor.ResumeFileValidator;
+import com.teenthofabud.portfolio.core.exception.InvalidSearchParametersException;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
+import com.teenthofabud.portfolio.dto.FreelancerID;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.service.FreelancerService;
@@ -74,6 +80,8 @@ public class FreelancerController {
 	@Autowired
 	private ResumeFileValidator resumeValidator;
 	@Autowired
+	private Validator validator;
+	@Autowired
 	private Sort asc;
 	@Autowired
 	private Sort desc;
@@ -97,17 +105,25 @@ public class FreelancerController {
 	public ResponseEntity<Freelancer> getSingleFreelancer(
 			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam(required = false) String firstName,
 			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam(required = false) String lastName,
-			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = true) @RequestParam(required = true) String phoneNumber,
+			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = true) @RequestParam String phoneNumber,
 			@ApiParam(name = "emailId", value = "freelancer's email id", required = false) @RequestParam(required = false) String emailId,
-			@ApiParam(value = "aggregates all request query parameters to map", access = "internal", hidden = true) @RequestParam Map<String,String> requestParameters)
-			throws HttpStatusCodeException {
+			@ApiParam(name = "requestParameters", value = "aggregates all request query parameters to map", hidden = true) @RequestParam Map<String,String> requestParameters)
+			throws HttpStatusCodeException, ConstraintViolationException {
 		LOG.info("Search parameters: {}", requestParameters.toString());
+		// map request param string values to respective data type
 		Map<String,Object> searchParameters = requestParamsToDetailPOJOMap(requestParameters);
+		// convert map to corresponsin pojo
 		Detail freelancerDetails = (Detail) util.map2POJO(searchParameters, Detail.class);
-		Freelancer freelancer = freelancerService.read(freelancerDetails);
-		LOG.info("Search successful");
-		ResponseEntity<Freelancer> response = ResponseEntity.ok().body(freelancer);
-		return response;
+		// validate pojo
+		Set<ConstraintViolation<Detail>> errors = validator.validate(freelancerDetails);
+		if(errors.isEmpty()) {
+			Freelancer freelancer = freelancerService.read(freelancerDetails);
+			LOG.info("Search successful");
+			ResponseEntity<Freelancer> response = ResponseEntity.ok().body(freelancer);
+			return response;
+		} else {
+			throw new InvalidSearchParametersException(errors);
+		}
 	}
 
 	@ApiResponses(value = {
@@ -169,7 +185,10 @@ public class FreelancerController {
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@GetMapping("/{id}")
 	public ResponseEntity<Freelancer> getFreelancerDetails(
-			@ApiParam(name = "id", value = "freelancer unique id", required = true) @PathVariable String id)
+			@ApiParam(name = "id", value = "freelancer unique id", required = true) 
+			@NotNull(message = "freelancer id can't be null", payload = FreelancerID.class) 
+			@Pattern(message = "freelancer id has to be a positive whole number", regexp = "[0-9]+", payload = FreelancerID.class) 
+			@PathVariable String id)
 			throws HttpStatusCodeException {
 		Freelancer freelancer = freelancerService.read(id);
 		ResponseEntity<Freelancer> response = ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON)
@@ -204,7 +223,7 @@ public class FreelancerController {
 			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
 	@PostMapping
 	public ResponseEntity<ResponseVO> postFreelancerDetails(
-			@ApiParam(name = "freelancerData", value = "freelancer entity data", required = true) @Valid @RequestBody FreelancerVO freelancerData)
+			@ApiParam(name = "freelancerData", value = "freelancer model data", required = true) @Valid @RequestBody FreelancerVO freelancerData)
 			throws HttpStatusCodeException {
 		LOG.info("Freelancer data recieved: {}", freelancerData);
 		Freelancer model = new Freelancer();

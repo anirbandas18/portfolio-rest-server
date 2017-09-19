@@ -1,10 +1,16 @@
-package com.teenthofabud.portfolio.core.processor;
+package com.teenthofabud.portfolio.core;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.Payload;
 
+import org.hibernate.validator.internal.metadata.descriptor.ConstraintDescriptorImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +36,11 @@ import com.teenthofabud.portfolio.vo.ResponseVO;
 import com.teenthofabud.portfolio.vo.ValidationVO;
 
 @RestControllerAdvice
-public class PortfolioResponseHandler /*extends  ResponseEntityExceptionHandler */implements ResponseBodyAdvice<Object>/*, HandlerExceptionResolver*/ {
+public class PortfolioResponseHandler /* extends ResponseEntityExceptionHandler */ implements
+		ResponseBodyAdvice<Object>/* , HandlerExceptionResolver */ {
+
+	@Autowired
+	private UtilityService util;
 
 	@Value("${exception.cause.placeholder}")
 	private String exceptionCausePlaceholder;
@@ -38,8 +48,6 @@ public class PortfolioResponseHandler /*extends  ResponseEntityExceptionHandler 
 	private String validationErrorTemplate;
 	@Value("#{'${filtered.response.header.paths}'.split(',')}")
 	private List<String> filteredResponseHeaderPaths;
-	@Autowired
-	private UtilityService util;
 
 	private static final Logger LOG = LoggerFactory.getLogger(PortfolioResponseHandler.class);
 
@@ -51,9 +59,9 @@ public class PortfolioResponseHandler /*extends  ResponseEntityExceptionHandler 
 		ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, e.getStatusCode());
 		return response;
 	}
-	
+
 	@ExceptionHandler(value = MethodArgumentNotValidException.class)
-	public ResponseEntity<ValidationVO> handleRequestValidationErrors(MethodArgumentNotValidException e) {
+	public ResponseEntity<ValidationVO> handleRequestBodyValidationErrors(MethodArgumentNotValidException e) {
 		BindingResult bindingResult = e.getBindingResult();
 		List<ResponseVO> errors = bindingResult.getFieldErrors().stream()
 				.map(x -> new ResponseVO(x.getField(), x.getDefaultMessage())).collect(Collectors.toList());
@@ -71,7 +79,24 @@ public class PortfolioResponseHandler /*extends  ResponseEntityExceptionHandler 
 		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, code);
 		return response;
 	}
-	
+
+	@ExceptionHandler(value = ConstraintViolationException.class)
+	public ResponseEntity<ValidationVO> handlePathVariableValidationError(ConstraintViolationException e) {
+		Set<ConstraintViolation<?>> violations = e.getConstraintViolations();
+		Set<Class<? extends Payload>> payloads = new LinkedHashSet<>();
+		violations.forEach(v -> {
+			payloads.addAll(v.getConstraintDescriptor().getPayload());
+		});
+		String cause = payloads.stream().map(p -> p.getSimpleName()).collect(Collectors.joining(","));
+		String message = validationErrorTemplate.replace(exceptionCausePlaceholder, cause);
+		List<ResponseVO> errors = violations.stream().map(x -> 
+			new ResponseVO(((ConstraintDescriptorImpl<?>)x.getConstraintDescriptor()).getElementType().name(), x.getMessage()))
+				.collect(Collectors.toList());
+		ValidationVO body = new ValidationVO(message, errors);
+		ResponseEntity<ValidationVO> response = new ResponseEntity<>(body, HttpStatus.UNPROCESSABLE_ENTITY);
+		return response;
+	}
+
 	@Override
 	public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
 		// TODO Auto-generated method stub
@@ -87,11 +112,11 @@ public class PortfolioResponseHandler /*extends  ResponseEntityExceptionHandler 
 		String uri = util.matchesRequest(filteredResponseHeaderPaths, servletRequest);
 		if (uri.length() != 0) {
 			response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
-			response.getHeaders().setDate(System.currentTimeMillis());;
+			response.getHeaders().setDate(System.currentTimeMillis());
+			;
 			LOG.info("Response headers added to URI: {}", uri);
 		}
 		return body;
 	}
 
-	
 }
