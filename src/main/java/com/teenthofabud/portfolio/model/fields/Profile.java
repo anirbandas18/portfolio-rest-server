@@ -4,10 +4,12 @@ import java.util.Comparator;
 
 import javax.validation.constraints.Pattern;
 
+import com.teenthofabud.portfolio.core.tags.groups.RequestBodyValidation;
+
 
 public class Profile implements Comparable<Profile>{
 	
-	@Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "profile name should only contain alphanumeric characters and space")	
+	@Pattern(regexp = "^[a-zA-Z0-9\\s]+$", message = "profile name should only contain alphanumeric characters and space", groups = RequestBodyValidation.class)	
 	private String name;
 	private String overview;
 	private String url;// validate by GET method

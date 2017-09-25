@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.dto;
+package com.teenthofabud.portfolio.core.tags.payloads;
 
 import javax.validation.Payload;
 

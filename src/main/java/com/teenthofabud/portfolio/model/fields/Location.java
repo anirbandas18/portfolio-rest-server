@@ -7,20 +7,23 @@ import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
+import com.teenthofabud.portfolio.core.tags.groups.RequestBodyValidation;
+import com.teenthofabud.portfolio.core.tags.groups.RequestParamValidation;
+
 
 public class Location implements Comparable<Location> {
 
-	@NotEmpty(message = "city can't be blank")
-	@NotBlank(message = "city can't be blank")
-	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "city should only contain alphabets and space")
+	@NotEmpty(message = "city can't be blank", groups = RequestBodyValidation.class)
+	@NotBlank(message = "city can't be blank", groups = RequestBodyValidation.class)
+	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "city should only contain alphabets and space", groups = { RequestParamValidation.class, RequestBodyValidation.class})
 	private String city;
-	@NotEmpty(message = "state can't be blank")
-	@NotBlank(message = "state can't be blank")
-	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "state should only contain alphabets and space")
+	@NotEmpty(message = "state can't be blank", groups = RequestBodyValidation.class)
+	@NotBlank(message = "state can't be blank", groups = RequestBodyValidation.class)
+	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "state should only contain alphabets and space", groups = { RequestParamValidation.class, RequestBodyValidation.class})
 	private String state;
-	@NotEmpty(message = "country can't be blank")
-	@NotBlank(message = "country can't be blank")
-	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "country should only contain alphabets and space")
+	@NotEmpty(message = "country can't be blank", groups = RequestBodyValidation.class)
+	@NotBlank(message = "country can't be blank", groups = RequestBodyValidation.class)
+	@Pattern(regexp = "^[a-zA-Z\\s]+$", message = "country should only contain alphabets and space", groups = { RequestParamValidation.class, RequestBodyValidation.class})
 	private String country;
 	public String getState() {
 		return state;

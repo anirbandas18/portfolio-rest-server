@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
+import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
@@ -42,7 +46,10 @@ import com.teenthofabud.portfolio.core.ResumeFileValidator;
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.constants.SortOrder;
 import com.teenthofabud.portfolio.core.exception.EmptySearchParametersException;
-import com.teenthofabud.portfolio.dto.FreelancerDTO;
+import com.teenthofabud.portfolio.core.exception.InvalidSearchParametersException;
+import com.teenthofabud.portfolio.core.tags.groups.RequestBodyValidation;
+import com.teenthofabud.portfolio.core.tags.groups.RequestParamValidation;
+import com.teenthofabud.portfolio.core.tags.payloads.FreelancerDTO;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.model.fields.Detail;
@@ -62,10 +69,9 @@ import io.swagger.annotations.ResponseHeader;
 @Validated
 @RestController
 @RequestMapping("/freelancer")
-@Api(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, protocols = "http", description = "REST to CRUD operation mapping on freelancer properties and read/write for freelancer avatar and resume files", tags = {
-		"Freelancer" })
+@Api(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE, protocols = "http", description = "REST to CRUD operation mapping on freelancer properties and read/write for freelancer avatar and resume files")
 public class FreelancerController {
-
+	
 	private static final Logger LOG = LoggerFactory.getLogger(FreelancerController.class);
 
 	@Autowired
@@ -74,6 +80,8 @@ public class FreelancerController {
 	private UtilityService util;
 	@Autowired
 	private ResumeFileValidator resumeValidator;
+	@Autowired
+	private Validator validator;
 	@Autowired
 	private Sort asc;
 	@Autowired
@@ -93,27 +101,29 @@ public class FreelancerController {
 			@ApiResponse(code = 422, message = "Freelancer search parameters are invalid", response = ResponseVO.class) })
 	@ApiOperation(value = "read details of a single freelancer matching the criteria", response = FreelancerDTO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read details of freelancer from database as identified by values of it's properties and expose it", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server JSON"),
-			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
+			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") }, tags = "FreelancerSearch")
 	@GetMapping("/search/single")
 	public ResponseEntity<Freelancer> getSingleFreelancer(
-			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam(required = false) 
-			@Pattern(regexp = "^[a-zA-Z]+$", message = "first name should only contain alphabets", payload = FreelancerDTO.firstName.class) String firstName,
-			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam(required = false) 
-			@Pattern(regexp = "^[a-zA-Z]+$", message = "last name should only contain alphabets", payload = FreelancerDTO.lastName.class) String lastName,
-			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = true) @RequestParam(required = false) 
-			@Pattern(regexp = "((\\+*)((0[ -]+)*|(91 )*)(\\d{12}+|\\d{10}+))|\\d{5}([- ]*)\\d{6}", message = "phone number should only 10 contain digits", payload = FreelancerDTO.phoneNumber.class) String phoneNumber,
+			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam(required = false) String firstName,
+			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam(required = false) String lastName,
+			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = true) @RequestParam(required = false) String phoneNumber,
 			@ApiParam(name = "emailId", value = "freelancer's email id", required = false) @RequestParam(required = false) String emailId,
 			@ApiParam(name = "requestParameters", value = "aggregates all request query parameters to map", hidden = true) @RequestParam Map<String,String> requestParameters)
-			throws HttpStatusCodeException {
+			throws HttpStatusCodeException, ConstraintViolationException {
 		LOG.info("Search parameters: {}", requestParameters.toString());
 		// map request param string values to respective data type
 		Map<String,Object> searchParameters = requestParamsToDetailPOJOMap(requestParameters);
-		// convert map to corresponsin pojo
+		// convert map to corresponding pojo
 		Detail freelancerDetails = (Detail) util.map2POJO(searchParameters, Detail.class);
-		Freelancer freelancer = freelancerService.read(freelancerDetails);
-		LOG.info("Search successful");
-		ResponseEntity<Freelancer> response = ResponseEntity.ok().body(freelancer);
-		return response;
+		Set<ConstraintViolation<Detail>> violations = validator.validate(freelancerDetails, RequestParamValidation.class);
+		if(violations.isEmpty()) {
+			Freelancer freelancer = freelancerService.read(freelancerDetails);
+			LOG.info("Search successful");
+			ResponseEntity<Freelancer> response = ResponseEntity.ok().body(freelancer);
+			return response;
+		} else {
+			throw new InvalidSearchParametersException(Detail.class, violations);
+		}
 	}
 
 	@ApiResponses(value = {
@@ -122,27 +132,29 @@ public class FreelancerController {
 			@ApiResponse(code = 422, message = "Freelancer search parameters are invalid", response = ResponseVO.class) })
 	@ApiOperation(value = "read multiple freelancer details matching criteria", responseContainer = "List", response = FreelancerDTO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read all freelancers from database as identified by values of properties and expose it", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
-			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
+			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") }, tags = "FreelancerSearch")
 	@GetMapping("/search/multiple/{order}")
 	public ResponseEntity<?> getMultipleFreelancers(
-			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam(required = false) 
-			@Pattern(regexp = "^[a-zA-Z]+$", message = "first name should only contain alphabets", payload = FreelancerDTO.firstName.class) String firstName,
-			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam(required = false) 
-			@Pattern(regexp = "^[a-zA-Z]+$", message = "last name should only contain alphabets", payload = FreelancerDTO.lastName.class) String lastName,
-			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = true) @RequestParam(required = false) 
-			@Pattern(regexp = "((\\+*)((0[ -]+)*|(91 )*)(\\d{12}+|\\d{10}+))|\\d{5}([- ]*)\\d{6}", message = "phone number should only 10 contain digits", payload = FreelancerDTO.phoneNumber.class) String phoneNumber,
+			@ApiParam(name = "firstName", value = "freelancer's first name", required = false) @RequestParam(required = false) String firstName,
+			@ApiParam(name = "lastName", value = "freelancer's last name", required = false) @RequestParam(required = false) String lastName,
+			@ApiParam(name = "phoneNumber", value = "freelancer's phone number", required = true) @RequestParam(required = false) String phoneNumber,
 			@ApiParam(name = "emailId", value = "freelancer's email id", required = false) @RequestParam(required = false) String emailId,
 			@ApiParam(value = "aggregates all request query parameters to map", access = "internal", hidden = true) @RequestParam Map<String,String> requestParameters,
 			@ApiParam(name = "order", value = "search result order", required = false) @PathVariable String sortOrder)
-			throws HttpStatusCodeException {
+			throws HttpStatusCodeException, ConstraintViolationException {
 		LOG.info("Search parameters: {}", requestParameters.toString());
 		List<Freelancer> matchingFreelancers = new ArrayList<>();
 		Sort[] order = parseSortOrder(sortOrder);
 		try {
 			Map<String,Object> searchParameters = requestParamsToDetailPOJOMap(requestParameters);
 			Detail freelancerDetails = (Detail) util.map2POJO(searchParameters, Detail.class);
-			LOG.info("Fetching search results of all freelancers in order: {}", order[0]);
-			matchingFreelancers = freelancerService.readAll(freelancerDetails, order);
+			Set<ConstraintViolation<Detail>> violations = validator.validate(freelancerDetails, RequestParamValidation.class);
+			if(violations.isEmpty()) {
+				LOG.info("Fetching search results of all freelancers in order: {}", order[0]);
+				matchingFreelancers = freelancerService.readAll(freelancerDetails, order);
+			} else {
+				throw new InvalidSearchParametersException(Detail.class, violations);
+			}
 		} catch (EmptySearchParametersException e) {
 			LOG.info("Fetching all freelancers since search parameters are not provided");
 			matchingFreelancers = freelancerService.readAll(order);
@@ -157,7 +169,7 @@ public class FreelancerController {
 			@ApiResponse(code = 404, message = "No freelancers found", response = ResponseVO.class) })
 	@ApiOperation(value = "read all freelancer details", responseContainer = "List", response = FreelancerDTO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read all freelancers from database and expose it", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
-			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
+			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") }, tags = "FreelancerSearch")
 	@GetMapping("/all/{order}")
 	public ResponseEntity<List<Freelancer>> getAllFreelancers(
 			@ApiParam(name = "order", value = "search result order", required = false) @PathVariable String sortOrder)
@@ -175,7 +187,7 @@ public class FreelancerController {
 			@ApiResponse(code = 404, message = "No freelancer found with ID", response = ResponseVO.class) })
 	@ApiOperation(value = "read freelancer details", response = FreelancerDTO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Read details of freelancer from database as identified by its ID and expose it", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
-			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
+			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") }, tags = "FreelancerCRUD")
 	@GetMapping("/{id}")
 	public ResponseEntity<Freelancer> getFreelancerDetails(
 			@ApiParam(name = "id", value = "freelancer unique id", required = true) 
@@ -194,7 +206,7 @@ public class FreelancerController {
 			@ApiResponse(code = 404, message = "No freelancer found with ID", response = ResponseVO.class) })
 	@ApiOperation(value = "delete freelancer details", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Delete details of freelancer from database as identified by its ID and return the operation status", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
-			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
+			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") }, tags = "FreelancerCRUD")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ResponseVO> deleteFreelancerDetails(
 			@ApiParam(name = "id", value = "freelancer unique id", required = true)  
@@ -216,10 +228,11 @@ public class FreelancerController {
 			@ApiResponse(code = 422, message = "Freelancer field validations failed with error", response = ValidationVO.class) })
 	@ApiOperation(value = "create freelancer details", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Create freelancer in database with corresponding data passed as JSON in request body and return the ID after successful operation", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
-			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
+			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") }, tags = "FreelancerCRUD")
 	@PostMapping
 	public ResponseEntity<ResponseVO> postFreelancerDetails(
-			@ApiParam(name = "freelancerData", value = "freelancer model data", required = true) @Valid @RequestBody FreelancerVO freelancerData)
+			@ApiParam(name = "freelancerData", value = "freelancer model data", required = true) @Validated(RequestBodyValidation.class) 
+			@RequestBody FreelancerVO freelancerData)
 			throws HttpStatusCodeException {
 		LOG.info("Freelancer data recieved: {}", freelancerData);
 		Freelancer model = new Freelancer();
@@ -242,14 +255,15 @@ public class FreelancerController {
 			@ApiResponse(code = 422, message = "Freelancer field validations failed with error", response = ValidationVO.class) })
 	@ApiOperation(value = "update freelancer details", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Update details of freelancer wrt ID in database with corresponding data passed as JSON in request body", responseHeaders = {
 			@ResponseHeader(name = "Content-Type", description = "Content type of response being returned by server viz., XML, JSON"),
-			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") })
+			@ResponseHeader(name = "Date", description = "Timestamp when the response gets created by the server") }, tags = "FreelancerCRUD")
 	@PutMapping("/{id}")
 	public ResponseEntity<ResponseVO> putFreelancerDetails(
 			@ApiParam(name = "id", value = "freelancer unique id", required = true) 
 			@NotNull(message = "freelancer id can't be null", payload = FreelancerDTO.id.class) 
 			@Pattern(message = "freelancer id has to be a positive whole number", regexp = "[0-9]+", payload = FreelancerDTO.id.class) 
 			@PathVariable String id,
-			@ApiParam(name = "freelancerData", value = "freelancer entity data", required = true) @Valid @RequestBody FreelancerVO freelancerData)
+			@ApiParam(name = "freelancerData", value = "freelancer entity data", required = true) @Validated(RequestBodyValidation.class)
+			@RequestBody FreelancerVO freelancerData)
 			throws HttpStatusCodeException {
 		LOG.info("Freelancer data recieved: {} for ID: {}", freelancerData, id);
 		Freelancer model = new Freelancer();
@@ -271,7 +285,7 @@ public class FreelancerController {
 			@ApiResponse(code = 226, message = "Freelancer resume file uploaded", response = ResponseVO.class),
 			@ApiResponse(code = 500, message = "Error saving freelancer resume file", response = ResponseVO.class),
 			@ApiResponse(code = 422, message = "Freelancer resume file is invalid", response = ValidationVO.class) })
-	@ApiOperation(value = "upload freelancer's resume file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
+	@ApiOperation(value = "upload freelancer's resume file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status", tags = "FreelancerFile")
 	@PutMapping("/resume/{id}")
 	public ResponseEntity<ResponseVO> uploadResume(
 			@ApiParam(name = "resume", value = "freelancer's resume file", required = true) @RequestParam @Valid MultipartFile resume,
@@ -299,7 +313,7 @@ public class FreelancerController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Freelancer resume file downloaded", response = ResponseVO.class),
 			@ApiResponse(code = 500, message = "Error fetching freelancer resume file", response = ResponseVO.class) })
-	@ApiOperation(value = "download freelancer's resume file", response = ByteArrayResource.class, notes = "Download resume file of freelancer as identified by its respective ID from the file system")
+	@ApiOperation(value = "download freelancer's resume file", response = ByteArrayResource.class, notes = "Download resume file of freelancer as identified by its respective ID from the file system", tags = "FreelancerFile")
 	@GetMapping("/resume/{id}")
 	public ResponseEntity<Resource> downloadResume(
 			@ApiParam(name = "id", value = "freelancer unique id", required = true) 
@@ -330,7 +344,7 @@ public class FreelancerController {
 			@ApiResponse(code = 226, message = "Freelancer avatar file uploaded", response = ResponseVO.class),
 			@ApiResponse(code = 500, message = "Error saving freelancer avatar file", response = ResponseVO.class),
 			@ApiResponse(code = 422, message = "Freelancer avatar file is invalid", response = ValidationVO.class) })
-	@ApiOperation(value = "upload freelancer's avatar file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status")
+	@ApiOperation(value = "upload freelancer's avatar file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status", tags = "FreelancerFile")
 	@PutMapping("/avatar/{id}")
 	public ResponseEntity<ResponseVO> uploadAvatar(
 			@ApiParam(name = "avatar", value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar,
@@ -359,7 +373,7 @@ public class FreelancerController {
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Freelancer avatar file downloaded", response = ResponseVO.class),
 			@ApiResponse(code = 500, message = "Error fetching freelancer avatar file", response = ResponseVO.class) })
-	@ApiOperation(value = "download freelancer's avatar file", response = ByteArrayResource.class, notes = "Download avatar file of freelancer as identified by its respective ID from the file system")
+	@ApiOperation(value = "download freelancer's avatar file", response = ByteArrayResource.class, notes = "Download avatar file of freelancer as identified by its respective ID from the file system", tags = "FreelancerFile")
 	@GetMapping("/avatar/{id}")
 	public ResponseEntity<Resource> downloadAvatar(
 			@ApiParam(name = "id", value = "freelancer unique id", required = true) 

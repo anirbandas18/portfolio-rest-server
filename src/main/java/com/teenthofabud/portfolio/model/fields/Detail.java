@@ -14,26 +14,29 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teenthofabud.portfolio.core.tags.groups.RequestBodyValidation;
+import com.teenthofabud.portfolio.core.tags.groups.RequestParamValidation;
+import com.teenthofabud.portfolio.core.tags.payloads.FreelancerDTO;
 
 @JsonInclude(value = Include.NON_EMPTY)
 public class Detail implements Comparable<Detail> {
 
-	@NotEmpty(message = "first name can't be empty")
-	@NotBlank(message = "first name can't be blank")
-	@Pattern(regexp = "^[a-zA-Z]+$", message = "first name should only contain alphabets")
+	@NotEmpty(message = "first name can't be empty", groups = RequestBodyValidation.class)
+	@NotBlank(message = "first name can't be blank", groups = RequestBodyValidation.class)
+	@Pattern(regexp = "^[a-zA-Z]+$", message = "first name should only contain alphabets", groups = { RequestParamValidation.class, RequestBodyValidation.class}, payload = FreelancerDTO.firstName.class)
 	private String firstName;
-	@NotEmpty(message = "last name can't be empty")
-	@NotBlank(message = "last name can't be blank")
-	@Pattern(regexp = "^[a-zA-Z]+$", message = "last name should only contain alphabets")
+	@NotEmpty(message = "last name can't be empty", groups = RequestBodyValidation.class)
+	@NotBlank(message = "last name can't be blank", groups = RequestBodyValidation.class)
+	@Pattern(regexp = "^[a-zA-Z]+$", message = "last name should only contain alphabets", groups = { RequestParamValidation.class, RequestBodyValidation.class}, payload = FreelancerDTO.lastName.class)
 	private String lastName;
-	@NotEmpty(message = "email id can't be empty")
-	@NotBlank(message = "email id can't be blank")
+	@NotEmpty(message = "email id can't be empty", groups = RequestBodyValidation.class)
+	@NotBlank(message = "email id can't be blank", groups = RequestBodyValidation.class)
 	// @Email(regexp = "^[\\\\w-\\\\+]+(\\\\.[\\\\w]+)*@[\\\\w-]+(\\\\.[\\\\w]+)*(\\\\.[a-z]{2,})$")
 	// validate by sending email
 	private String emailId;
-	@NotEmpty(message = "phone number can't be empty")
-	@NotBlank(message = "phone number can't be blank")
-	@Pattern(regexp = "((\\+*)((0[ -]+)*|(91 )*)(\\d{12}+|\\d{10}+))|\\d{5}([- ]*)\\d{6}", message = "phone number should only 10 contain digits")
+	@NotEmpty(message = "phone number can't be empty", groups = RequestBodyValidation.class)
+	@NotBlank(message = "phone number can't be blank", groups = RequestBodyValidation.class)
+	@Pattern(regexp = "((\\+*)((0[ -]+)*|(91 )*)(\\d{12}+|\\d{10}+))|\\d{5}([- ]*)\\d{6}", message = "phone number should only 10 contain digits", groups = { RequestParamValidation.class, RequestBodyValidation.class}, payload = FreelancerDTO.phoneNumber.class)
 	private String phoneNumber;
 	@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
 	private Date dateOfBirth;
