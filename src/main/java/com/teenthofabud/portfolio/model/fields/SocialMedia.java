@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import javax.validation.constraints.Pattern;
 
-import com.teenthofabud.portfolio.core.tags.groups.RequestBodyValidation;
+import com.teenthofabud.portfolio.core.validation.groups.RequestBodyValidation;
 
 public class SocialMedia implements Comparable<SocialMedia>{
 	

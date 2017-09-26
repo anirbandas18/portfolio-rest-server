@@ -1,4 +1,4 @@
-package com.teenthofabud.portfolio.core.tags.payloads;
+package com.teenthofabud.portfolio.core.validation.payloads;
 
 import javax.validation.Payload;
 

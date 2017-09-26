@@ -7,8 +7,8 @@ import javax.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import com.teenthofabud.portfolio.core.tags.groups.RequestBodyValidation;
-import com.teenthofabud.portfolio.core.tags.groups.RequestParamValidation;
+import com.teenthofabud.portfolio.core.validation.groups.RequestBodyValidation;
+import com.teenthofabud.portfolio.core.validation.groups.RequestParamValidation;
 
 
 public class Location implements Comparable<Location> {

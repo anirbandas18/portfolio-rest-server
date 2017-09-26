@@ -14,9 +14,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.teenthofabud.portfolio.core.tags.groups.RequestBodyValidation;
-import com.teenthofabud.portfolio.core.tags.groups.RequestParamValidation;
-import com.teenthofabud.portfolio.core.tags.payloads.FreelancerDTO;
+import com.teenthofabud.portfolio.core.validation.groups.RequestBodyValidation;
+import com.teenthofabud.portfolio.core.validation.groups.RequestParamValidation;
+import com.teenthofabud.portfolio.core.validation.payloads.FreelancerDTO;
 
 @JsonInclude(value = Include.NON_EMPTY)
 public class Detail implements Comparable<Detail> {

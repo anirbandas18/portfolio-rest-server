@@ -9,7 +9,6 @@ import java.util.Set;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import javax.validation.Valid;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -26,11 +25,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.DataBinder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -42,14 +39,14 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.teenthofabud.portfolio.core.ResumeFileValidator;
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.constants.SortOrder;
 import com.teenthofabud.portfolio.core.exception.EmptySearchParametersException;
 import com.teenthofabud.portfolio.core.exception.InvalidSearchParametersException;
-import com.teenthofabud.portfolio.core.tags.groups.RequestBodyValidation;
-import com.teenthofabud.portfolio.core.tags.groups.RequestParamValidation;
-import com.teenthofabud.portfolio.core.tags.payloads.FreelancerDTO;
+import com.teenthofabud.portfolio.core.validation.constraints.CheckFreelancerFile;
+import com.teenthofabud.portfolio.core.validation.groups.RequestBodyValidation;
+import com.teenthofabud.portfolio.core.validation.groups.RequestParamValidation;
+import com.teenthofabud.portfolio.core.validation.payloads.FreelancerDTO;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.model.fields.Detail;
@@ -78,9 +75,9 @@ public class FreelancerController {
 	private FreelancerService freelancerService;
 	@Autowired
 	private UtilityService util;
-	@Autowired
-	private ResumeFileValidator resumeValidator;
-	@Autowired
+	/*@Autowired
+	private FreelancerFileValidator fileValidator;
+	*/@Autowired
 	private Validator validator;
 	@Autowired
 	private Sort asc;
@@ -89,10 +86,10 @@ public class FreelancerController {
 	@Value("${file.base.location}")
 	private String fileBaseLocation;
 	
-	@InitBinder(value = {"resume", "avatar"})
+	/*@InitBinder(value = {"resume", "avatar"})
     public void initBinder(DataBinder binder) {
         binder.addValidators(resumeValidator);
-    }	
+    }	*/
 
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Freelancer found matching criteria", response = FreelancerDTO.class),
@@ -288,7 +285,8 @@ public class FreelancerController {
 	@ApiOperation(value = "upload freelancer's resume file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload resume file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status", tags = "FreelancerFile")
 	@PutMapping("/resume/{id}")
 	public ResponseEntity<ResponseVO> uploadResume(
-			@ApiParam(name = "resume", value = "freelancer's resume file", required = true) @RequestParam @Valid MultipartFile resume,
+			@ApiParam(name = "resume", value = "freelancer's resume file", required = true) @RequestParam 
+			@CheckFreelancerFile(type = FreelancerFile.RESUME) MultipartFile resume,
 			@ApiParam(name = "id", value = "freelancer unique id", required = true) @NotNull(message = "freelancer id can't be null", payload = FreelancerDTO.id.class) 
 			@Pattern(message = "freelancer id has to be a positive whole number", regexp = "[0-9]+", payload = FreelancerDTO.id.class) 
 			@PathVariable String id)
@@ -347,7 +345,8 @@ public class FreelancerController {
 	@ApiOperation(value = "upload freelancer's avatar file", response = ResponseVO.class, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE, notes = "Upload avatar file of freelancer as identified by its respective ID and store on the file system. Override if already exists. Respond with operation status", tags = "FreelancerFile")
 	@PutMapping("/avatar/{id}")
 	public ResponseEntity<ResponseVO> uploadAvatar(
-			@ApiParam(name = "avatar", value = "freelancer's avatar file", required = true) @RequestParam MultipartFile avatar,
+			@ApiParam(name = "avatar", value = "freelancer's avatar file", required = true) @RequestParam 
+			@CheckFreelancerFile(type = FreelancerFile.AVATAR) MultipartFile avatar,
 			@ApiParam(name = "id", value = "freelancer unique id", required = true)
 			@NotNull(message = "freelancer id can't be null", payload = FreelancerDTO.id.class) 
 			@Pattern(message = "freelancer id has to be a positive whole number", regexp = "[0-9]+", payload = FreelancerDTO.id.class) 
