@@ -1,5 +1,8 @@
 package com.teenthofabud.portfolio.service.impl;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -7,7 +10,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.RequestPartServletServerHttpRequest;
 
 import com.fasterxml.jackson.annotation.JsonRootName;
@@ -32,8 +35,6 @@ public class UtilityServiceImpl implements UtilityService{
 	
 	@Autowired
 	private ObjectMapper mapper;
-	@Autowired
-	private Validator validator;
 	
 	public Map<String,Object> pojo2Map(Object pojo) {
 		Map<String,Object> parameters = mapper.convertValue(pojo, new TypeReference<Map<String, Object>>() {});
@@ -111,6 +112,17 @@ public class UtilityServiceImpl implements UtilityService{
 		// TODO Auto-generated method stub
 		
 		return null;
+	}
+
+	@Override
+	public File multiPartToFile(MultipartFile multipartFile) throws IOException {
+		// TODO Auto-generated method stub
+		File file = new File(multipartFile.getOriginalFilename());
+		file.createNewFile(); 
+		FileOutputStream fos = new FileOutputStream(file); 
+		fos.write(multipartFile.getBytes());
+		fos.close(); 
+		return file;
 	}
 	
 }

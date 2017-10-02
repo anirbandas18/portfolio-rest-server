@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.exception.FreelancerAlreadyExistsException;
+import com.teenthofabud.portfolio.core.exception.FreelancerFileNotFoundException;
 import com.teenthofabud.portfolio.core.exception.FreelancerNotFoundException;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
@@ -29,7 +31,7 @@ public interface FreelancerService {
 	
 	public Boolean delete(String id) throws FreelancerNotFoundException;
 	
-	public FreelancerFileDTO exportFile(FreelancerFileDTO dto) throws IOException, FreelancerNotFoundException ;
+	public FreelancerFileDTO exportFile(String id, FreelancerFile type) throws IOException, FreelancerNotFoundException, FreelancerFileNotFoundException ;
 	
 	public Boolean importFile(FreelancerFileDTO dto) throws IOException, FreelancerNotFoundException;
 	

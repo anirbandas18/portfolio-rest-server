@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-
-
 import com.teenthofabud.portfolio.core.FreelancerFileValidator;
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 

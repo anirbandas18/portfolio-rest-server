@@ -9,18 +9,23 @@ import java.util.stream.Collectors;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.common.net.MediaType;
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.validation.constraints.CheckFreelancerFile;
 
-
 public class FreelancerFileValidator implements ConstraintValidator<CheckFreelancerFile, MultipartFile> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(FreelancerFileValidator.class);
 
 	private FreelancerFile type;
 
+	//@Resource(name = "resumeMimes")
 	private List<String> resumeMimes;
+	//@Resource(name = "avatarMimes")
 	private List<String> avatarMimes;
 
 	@Override
@@ -51,24 +56,28 @@ public class FreelancerFileValidator implements ConstraintValidator<CheckFreelan
 	@Override
 	public boolean isValid(MultipartFile value, ConstraintValidatorContext constraintContext) {
 		// TODO Auto-generated method stub
+		LOG.info("Validating freelancer's {} file", this.type);
 		Boolean isValid = true;
 		if (value == null || value.isEmpty() || value.getSize() == 0) {
 			isValid = false;
 		} else {
 			String contentType = value.getContentType();
+			int index = -1;
 			switch (this.type) {
 			case AVATAR:
-				int indexAvatar = Collections.binarySearch(avatarMimes, contentType);
-				isValid = indexAvatar >= 0;
+				index = Collections.binarySearch(avatarMimes, contentType);
+				isValid = index >= 0;
 				break;
 			case RESUME:
-				int indexResume = Collections.binarySearch(resumeMimes, contentType);
-				isValid = indexResume >= 0;
+				index = Collections.binarySearch(resumeMimes, contentType);
+				isValid = index >= 0;
 				break;
 			}
 			if (!isValid) {
+				String template = "Unprocessable file type: " + contentType;
+				LOG.error("Error validating freelancer's file: {}", template);
 				constraintContext.disableDefaultConstraintViolation();
-				constraintContext.buildConstraintViolationWithTemplate("unprocessable file mime type: " + contentType)
+				constraintContext.buildConstraintViolationWithTemplate(template)
 				.addPropertyNode(type.name())
 				.addConstraintViolation();
 			}

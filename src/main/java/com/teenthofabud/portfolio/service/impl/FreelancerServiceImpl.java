@@ -1,9 +1,6 @@
 package com.teenthofabud.portfolio.service.impl;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,37 +12,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Sort;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.teenthofabud.portfolio.core.constants.FreelancerFile;
 import com.teenthofabud.portfolio.core.exception.FreelancerAlreadyExistsException;
+import com.teenthofabud.portfolio.core.exception.FreelancerFileNotFoundException;
 import com.teenthofabud.portfolio.core.exception.FreelancerNotFoundException;
+import com.teenthofabud.portfolio.dto.FileArchiveMetadata;
 import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
 import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.repository.FreelancerRepository;
+import com.teenthofabud.portfolio.service.FileArchiveService;
 import com.teenthofabud.portfolio.service.FreelancerService;
 
 @Component
 @Transactional(rollbackFor = { FreelancerAlreadyExistsException.class, FreelancerNotFoundException.class, IOException.class })
 public class FreelancerServiceImpl implements FreelancerService {
 
+	private static final Logger LOG = LoggerFactory.getLogger(FreelancerService.class);
+	
 	@Autowired
 	private FreelancerRepository repository;
-
 	@Autowired
 	private ExampleMatcher matcher;
-	
 	@Autowired
 	private Sort asc;
-	
 	@Autowired
 	private UtilityServiceImpl util;
-	
-	private static final Logger LOG = LoggerFactory.getLogger(FreelancerService.class);
+	@Autowired
+	private FileArchiveService fileArchive;
 	
 	@Override
 	public String create(Freelancer freelancer) throws FreelancerAlreadyExistsException {
@@ -116,22 +114,31 @@ public class FreelancerServiceImpl implements FreelancerService {
 	}
 
 	@Override
-	public FreelancerFileDTO exportFile(FreelancerFileDTO dto) throws FreelancerNotFoundException, IOException {
+	public FreelancerFileDTO exportFile(String id, FreelancerFile type) throws 
+		FreelancerNotFoundException, FreelancerFileNotFoundException, IOException {
 		// TODO Auto-generated method stub
-		String id = dto.getId();
-		LOG.info("Exporting {} file of freelancer with id: {}", dto.getType(), id);
+		LOG.info("Exporting {} file of freelancer with id: {}", type, id);
 		if (repository.exists(id)) {
 			Freelancer freelancer = repository.findOne(id);
-			String fileLocation = dto.getType().equals(FreelancerFile.RESUME) ? freelancer.getResumePath() : freelancer.getAvatarPath();
-			Path filePath = Paths.get(fileLocation);
-			byte[] content = Files.readAllBytes(filePath);
-			LOG.info("{} file of freelancer read from {}", dto.getType(), filePath);
-			String name = filePath.toFile().getName();
-			String contentType = Files.probeContentType(filePath);
-			LOG.info("{} file metadata = size: {}, type: {}", dto.getType(), content.length, contentType);
-			MultipartFile file = new MockMultipartFile(name, name, contentType, content);
-			dto.setFile(file);
-			return dto;
+			FileArchiveMetadata metadata = type == FreelancerFile.RESUME ? freelancer.getResumeMetadata() : freelancer.getAvatarMetadata();
+			if(metadata != null) {
+				MultipartFile file = fileArchive.downloadFileFromBucket(metadata.getKey(), type);
+				/*String fileLocation = type == FreelancerFile.RESUME ? freelancer.getResumePath() : freelancer.getAvatarPath();
+				Path filePath = Paths.get(fileLocation);
+				byte[] content = Files.readAllBytes(filePath);
+				LOG.info("{} file of freelancer read from {}", type, filePath);
+				String name = filePath.toFile().getName();
+				String contentType = Files.probeContentType(filePath);*/
+				LOG.info("{} file metadata = size: {}, type: {}", type, file.getSize(), file.getContentType());
+				FreelancerFileDTO dto = new FreelancerFileDTO();
+				dto.setFile(file);
+				dto.setId(id);
+				dto.setType(type);
+				return dto;
+			} else {
+				LOG.error("Freelancer {} file not found", type);
+				throw new FreelancerFileNotFoundException(id, type);
+			}
 		} else {
 			Map<String,Object> parameters = new HashMap<>();
 			parameters.put("id", id);
@@ -146,21 +153,24 @@ public class FreelancerServiceImpl implements FreelancerService {
 		String id = dto.getId();
 		LOG.info("Importing {} file of freelancer with id: {}", dto.getType(), id);
 		if (repository.exists(id)) {
-			String fileName = dto.getFile().getOriginalFilename();
-			Path dirPath = Paths.get(dto.getBaseFileLocation(), id, dto.getType().name().toLowerCase());
+			/*String fileName = dto.getFile().getOriginalFilename();
+			Path dirPath = Paths.get(System.getProperty("user.dir"), id, dto.getType().name().toLowerCase());
 			dirPath = Files.createDirectories(dirPath);
 			Path filePath = Paths.get(dirPath.toString(), fileName);
 			Path writtenPath = Files.write(filePath, dto.getFile().getBytes());
-			LOG.info("{} file: {} of freelancer written to {}", dto.getType(), fileName, dirPath);
+			LOG.info("{} file: {} of freelancer written to {}", dto.getType(), fileName, dirPath);*/
+			FileArchiveMetadata metadata = fileArchive.uploadFileToBucket(dto);
 			Freelancer freelancer = repository.findOne(dto.getId());
 			switch(dto.getType()) {
 			case AVATAR :
-				freelancer.setAvatarPath(writtenPath.toString());
-				LOG.info("Updating avatar file path of freelancer");
+				//freelancer.setAvatarPath(writtenPath.toString());
+				freelancer.setAvatarMetadata(metadata);
+				LOG.info("Updating avatar file of freelancer");
 				break;
 			case RESUME :
-				freelancer.setResumePath(writtenPath.toString());
-				LOG.info("Updating resume file path of freelancer");
+				//freelancer.setResumePath(writtenPath.toString());
+				freelancer.setResumeMetadata(metadata);
+				LOG.info("Updating resume file of freelancer");
 				break;
 			}
 			Boolean updated = update(id, freelancer);

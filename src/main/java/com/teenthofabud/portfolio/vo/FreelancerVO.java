@@ -13,6 +13,9 @@ import com.teenthofabud.portfolio.model.fields.SocialMedia;
 @JsonRootName(value = "freelancer")
 public class FreelancerVO {
 	
+	private String resumeUrl;
+	private String avatarUrl;
+	
 	@Valid
 	private Detail detail;
 	@Valid
@@ -52,6 +55,18 @@ public class FreelancerVO {
 	}
 	public void setLanguagesKnown(List<String> languagesKnown) {
 		this.languagesKnown = languagesKnown;
+	}
+	public String getResumeUrl() {
+		return resumeUrl;
+	}
+	public void setResumeUrl(String resumeUrl) {
+		this.resumeUrl = resumeUrl;
+	}
+	public String getAvatarUrl() {
+		return avatarUrl;
+	}
+	public void setAvatarUrl(String avatarUrl) {
+		this.avatarUrl = avatarUrl;
 	}
 	
 }

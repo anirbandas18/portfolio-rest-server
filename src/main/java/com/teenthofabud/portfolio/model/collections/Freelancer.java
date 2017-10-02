@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.base.Objects;
+import com.teenthofabud.portfolio.dto.FileArchiveMetadata;
 import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.model.fields.Location;
 import com.teenthofabud.portfolio.model.fields.Profile;
@@ -19,8 +19,8 @@ public class Freelancer implements Comparable<Freelancer>{
 
 	@Id
 	private String id;
-	private String resumePath;
-	private String avatarPath;
+	private FileArchiveMetadata resumeMetadata;
+	private FileArchiveMetadata avatarMetadata;
 	private Detail detail;
 	private Profile profile;
 	private Location location;
@@ -59,17 +59,17 @@ public class Freelancer implements Comparable<Freelancer>{
 	public void setLanguagesKnown(List<String> languagesKnown) {
 		this.languagesKnown = languagesKnown;
 	}
-	public String getResumePath() {
-		return resumePath;
+	public FileArchiveMetadata getResumeMetadata() {
+		return resumeMetadata;
 	}
-	public void setResumePath(@Value("#root.resumePath ?: 'hello'") String resumePath) {
-		this.resumePath = resumePath;
+	public void setResumeMetadata(FileArchiveMetadata resumeMetadata) {
+		this.resumeMetadata = resumeMetadata;
 	}
-	public String getAvatarPath() {
-		return avatarPath;
+	public FileArchiveMetadata getAvatarMetadata() {
+		return avatarMetadata;
 	}
-	public void setAvatarPath(@Value("#root.avatarPath ?: 'avatar'") String avatarPath) {
-		this.avatarPath = avatarPath;
+	public void setAvatarMetadata(FileArchiveMetadata avatarMetadata) {
+		this.avatarMetadata = avatarMetadata;
 	}
 	@Override
 	public int compareTo(Freelancer o) {
@@ -77,15 +77,15 @@ public class Freelancer implements Comparable<Freelancer>{
 		/*Boolean avatarComparison = Boolean.TRUE;
 		Boolean resumeComparison = Boolean.TRUE;	
 		try {
-			Path avatar1 = Paths.get(this.getAvatarPath());
-			Path avatar2 = Paths.get(o.getAvatarPath());
+			Metadata avatar1 = Metadatas.get(this.getAvatarMetadata());
+			Metadata avatar2 = Metadatas.get(o.getAvatarMetadata());
 			avatarComparison = FileUtils.contentEquals(avatar1.toFile(), avatar2.toFile());
 		} catch (IOException e) {
 			avatarComparison = Boolean.FALSE;
 		}
 		try {
-			Path resume1 = Paths.get(this.getResumePath());
-			Path resume2 = Paths.get(o.getResumePath());
+			Metadata resume1 = Metadatas.get(this.getResumeMetadata());
+			Metadata resume2 = Metadatas.get(o.getResumeMetadata());
 			resumeComparison = FileUtils.contentEquals(resume1.toFile(), resume2.toFile());	
 		} catch (IOException e) {
 			resumeComparison = Boolean.FALSE;
@@ -109,11 +109,11 @@ public class Freelancer implements Comparable<Freelancer>{
 		// TODO Auto-generated constructor stub
 	}
 	/*@PersistenceConstructor
-	public Freelancer(@Value("#root.resumePath ?: 'hello'") String resumePath, @Value("#root.avatarPath ?: 'avatar'") String avatarPath, Detail detail, Profile profile,
+	public Freelancer(@Value("#root.resumeMetadata ?: 'hello'") String resumeMetadata, @Value("#root.avatarMetadata ?: 'avatar'") String avatarMetadata, Detail detail, Profile profile,
 			Location location, List<SocialMedia> socialLinks, List<String> languagesKnown) {
 		super();
-		this.resumePath = resumePath;
-		this.avatarPath = avatarPath;
+		this.resumeMetadata = resumeMetadata;
+		this.avatarMetadata = avatarMetadata;
 		this.detail = detail;
 		this.profile = profile;
 		this.location = location;

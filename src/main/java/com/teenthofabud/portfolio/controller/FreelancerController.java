@@ -1,14 +1,5 @@
-package com.teenthofabud.portfolio.controller;
+/*package com.teenthofabud.portfolio.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Validator;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
@@ -16,15 +7,10 @@ import javax.validation.constraints.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,23 +19,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.multipart.MultipartFile;
 
-import com.teenthofabud.portfolio.core.constants.FreelancerFile;
-import com.teenthofabud.portfolio.core.constants.SortOrder;
-import com.teenthofabud.portfolio.core.exception.EmptySearchParametersException;
-import com.teenthofabud.portfolio.core.exception.InvalidSearchParametersException;
-import com.teenthofabud.portfolio.core.validation.constraints.CheckFreelancerFile;
 import com.teenthofabud.portfolio.core.validation.groups.RequestBodyValidation;
-import com.teenthofabud.portfolio.core.validation.groups.RequestParamValidation;
 import com.teenthofabud.portfolio.core.validation.payloads.FreelancerFields;
-import com.teenthofabud.portfolio.dto.FreelancerFileDTO;
 import com.teenthofabud.portfolio.model.collections.Freelancer;
-import com.teenthofabud.portfolio.model.fields.Detail;
 import com.teenthofabud.portfolio.service.FreelancerService;
 import com.teenthofabud.portfolio.service.UtilityService;
 import com.teenthofabud.portfolio.vo.FreelancerVO;
@@ -75,22 +50,16 @@ public class FreelancerController {
 	private FreelancerService freelancerService;
 	@Autowired
 	private UtilityService util;
-	/*@Autowired
-	private FreelancerFileValidator fileValidator;
-	*/@Autowired
+	@Autowired
 	private Validator validator;
 	@Autowired
 	private Sort asc;
 	@Autowired
 	private Sort desc;
+	
 	@Value("${file.base.location}")
 	private String fileBaseLocation;
 	
-	/*@InitBinder(value = {"resume", "avatar"})
-    public void initBinder(DataBinder binder) {
-        binder.addValidators(resumeValidator);
-    }	*/
-
 	@ApiResponses(value = {
 			@ApiResponse(code = 200, message = "Freelancer found matching criteria", response = FreelancerFields.class),
 			@ApiResponse(code = 400, message = "Freelancer search parameters validations failed with error", response = ResponseVO.class),
@@ -119,6 +88,7 @@ public class FreelancerController {
 			ResponseEntity<Freelancer> response = ResponseEntity.ok().body(freelancer);
 			return response;
 		} else {
+			LOG.error("Error validating freelancer details. No. of violations: {}", violations.size());
 			throw new InvalidSearchParametersException(Detail.class, violations);
 		}
 	}
@@ -150,6 +120,7 @@ public class FreelancerController {
 				LOG.info("Fetching search results of all freelancers in order: {}", order[0]);
 				matchingFreelancers = freelancerService.readAll(freelancerDetails, order);
 			} else {
+				LOG.error("Error validating freelancer details. No. of violations: {}", violations.size());
 				throw new InvalidSearchParametersException(Detail.class, violations);
 			}
 		} catch (EmptySearchParametersException e) {
@@ -291,12 +262,11 @@ public class FreelancerController {
 			@Pattern(message = "freelancer id has to be a positive whole number", regexp = "[0-9]+", payload = FreelancerFields.id.class) 
 			@PathVariable String id)
 			throws HttpStatusCodeException {
-		FreelancerFileDTO dto = new FreelancerFileDTO();
-		dto.setBaseFileLocation(fileBaseLocation);
-		dto.setId(id);
-		dto.setFile(resume);
-		dto.setType(FreelancerFile.RESUME);
 		try {
+			FreelancerFileDTO dto = new FreelancerFileDTO();
+			//dto.setBaseFileLocation(fileBaseLocation);
+			dto.setId(id);
+			dto.setType(FreelancerFile.RESUME);
 			Boolean status = freelancerService.importFile(dto);
 			ResponseVO body = new ResponseVO();
 			body.setStatus("uploaded");
@@ -304,7 +274,7 @@ public class FreelancerController {
 			ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, HttpStatus.IM_USED);
 			return response;
 		} catch (IOException e) {
-			LOG.error("Error saving file:{} ", e);
+			LOG.error("Error saving freelancer file:{} ", e);
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
@@ -333,7 +303,7 @@ public class FreelancerController {
 			ResponseEntity<Resource> response = ResponseEntity.ok().headers(headers).body(resource);
 			return response;
 		} catch (IOException e) {
-			LOG.error(e.getMessage());
+			LOG.error("Error fetching freelancer file:{} ", e);
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
@@ -353,7 +323,7 @@ public class FreelancerController {
 			@PathVariable String id)
 			throws HttpStatusCodeException {
 		FreelancerFileDTO dto = new FreelancerFileDTO();
-		dto.setBaseFileLocation(fileBaseLocation);
+		//dto.setBaseFileLocation(fileBaseLocation);
 		dto.setId(id);
 		dto.setFile(avatar);
 		dto.setType(FreelancerFile.AVATAR);
@@ -365,7 +335,7 @@ public class FreelancerController {
 			ResponseEntity<ResponseVO> response = new ResponseEntity<>(body, HttpStatus.IM_USED);
 			return response;
 		} catch (IOException e) {
-			LOG.error(e.getMessage());
+			LOG.error("Error saving freelancer file:{} ", e);
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
@@ -394,7 +364,7 @@ public class FreelancerController {
 			ResponseEntity<Resource> response = ResponseEntity.ok().headers(headers).body(resource);
 			return response;
 		} catch (IOException e) {
-			LOG.error(e.getMessage());
+			LOG.error("Error fetching freelancer file:{} ", e);
 			throw new HttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
 		}
 	}
@@ -427,3 +397,4 @@ public class FreelancerController {
 	}
 	
 }
+*/
