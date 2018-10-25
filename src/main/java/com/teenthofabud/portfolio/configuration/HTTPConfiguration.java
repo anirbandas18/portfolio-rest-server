@@ -37,7 +37,7 @@ public class HTTPConfiguration {
 	private Connector redirectConnector() {
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
 		connector.setScheme("http");
-		connector.setPort(8080);
+		connector.setPort(8040);
 		connector.setSecure(false);
 		connector.setRedirectPort(serverPort);
 
